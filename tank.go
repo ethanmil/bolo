@@ -1,15 +1,19 @@
 package main
 
 import (
+	"fmt"
+	"math"
+
 	"github.com/veandco/go-sdl2/sdl"
 )
 
 const (
-	tankSpeed = 0.05
+	tankSpeed = 0.01
 )
 
 type tank struct {
-	element *element
+	element  *element
+	velocity vector
 }
 
 func newTank() (t tank) {
@@ -19,7 +23,7 @@ func newTank() (t tank) {
 			y: 32,
 		},
 		chunk: sdl.Rect{
-			X: 130,
+			X: 0,
 			Y: 684,
 			H: 32,
 			W: 32,
@@ -31,16 +35,39 @@ func newTank() (t tank) {
 }
 
 func (t *tank) update() {
+
 	keys := sdl.GetKeyboardState()
 
-	switch uint8(1) {
-	case keys[sdl.SCANCODE_LEFT]:
-		t.element.angle = 270
-		t.element.position.x -= tankSpeed
-		break
-	case keys[sdl.SCANCODE_RIGHT]:
-		t.element.angle = 90
-		t.element.position.x += tankSpeed
-		break
+	movement := false
+
+	t.velocity.x = 0
+	t.velocity.y = 0
+
+	if keys[sdl.SCANCODE_LEFT] == 1 {
+		movement = true
+		t.velocity.x = -tankSpeed
 	}
+	if keys[sdl.SCANCODE_RIGHT] == 1 {
+		movement = true
+		t.velocity.x = tankSpeed
+	}
+	if keys[sdl.SCANCODE_DOWN] == 1 {
+		movement = true
+		t.velocity.y = tankSpeed
+	}
+	if keys[sdl.SCANCODE_UP] == 1 {
+		movement = true
+		t.velocity.y = -tankSpeed
+	}
+
+	if movement {
+		t.element.angle = math.Atan2(t.velocity.y, t.velocity.x) * (180 / math.Pi)
+	}
+
+	t.element.position.x += t.velocity.x
+	t.element.position.y += t.velocity.y
+
+	println("velocity: " + fmt.Sprintf("%v", t.velocity))
+	println("angle: " + fmt.Sprintf("%f", t.element.angle))
+
 }
