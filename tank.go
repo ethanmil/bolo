@@ -1,14 +1,11 @@
 package main
 
 import (
-	"fmt"
-	"math"
-
 	"github.com/veandco/go-sdl2/sdl"
 )
 
 const (
-	tankSpeed = 0.01
+	tankSpeed = 0.1
 )
 
 type tank struct {
@@ -40,8 +37,7 @@ func (t *tank) update() {
 
 	movement := false
 
-	t.velocity.x = 0
-	t.velocity.y = 0
+	t.velocity.reset()
 
 	if keys[sdl.SCANCODE_LEFT] == 1 {
 		movement = true
@@ -61,13 +57,9 @@ func (t *tank) update() {
 	}
 
 	if movement {
-		t.element.angle = math.Atan2(t.velocity.y, t.velocity.x) * (180 / math.Pi)
+		t.element.angle = t.velocity.getAngleInDegrees()
 	}
 
-	t.element.position.x += t.velocity.x
-	t.element.position.y += t.velocity.y
-
-	println("velocity: " + fmt.Sprintf("%v", t.velocity))
-	println("angle: " + fmt.Sprintf("%f", t.element.angle))
-
+	t.element.position.x += t.velocity.x * delta
+	t.element.position.y += t.velocity.y * delta
 }

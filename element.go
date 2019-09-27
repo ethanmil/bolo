@@ -13,11 +13,6 @@ type element struct {
 	chunk          sdl.Rect
 }
 
-type vector struct {
-	x float64
-	y float64
-}
-
 func (e *element) draw(renderer *sdl.Renderer) {
 	if !e.active {
 		return
