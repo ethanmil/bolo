@@ -1,21 +1,21 @@
 package main
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/veandco/go-sdl2/sdl"
 )
 
 type element struct {
 	position       vector
-	angle          float64
+	velocity       vector
 	size           vector
 	collisionSpace []int
 	active         bool
 	chunk          sdl.Rect
-}
-
-type vector struct {
-	x float64
-	y float64
+	// log helper
+	lastLogged time.Time
 }
 
 func (e *element) draw(renderer *sdl.Renderer) {
@@ -27,7 +27,7 @@ func (e *element) draw(renderer *sdl.Renderer) {
 		art,
 		&sdl.Rect{X: int32(e.chunk.X), Y: int32(e.chunk.Y), W: int32(e.size.x), H: int32(e.size.y)},
 		&sdl.Rect{X: int32(e.position.x), Y: int32(e.position.y), W: int32(e.chunk.W), H: int32(e.chunk.H)},
-		e.angle,
+		e.velocity.getAngle(),
 		&sdl.Point{X: int32(e.size.x / 2), Y: int32(e.size.y / 2)},
 		sdl.FLIP_NONE,
 	)
@@ -35,4 +35,11 @@ func (e *element) draw(renderer *sdl.Renderer) {
 
 func (e *element) update() {
 
+}
+
+func (e *element) print(every time.Duration) {
+	if time.Since(e.lastLogged) >= every {
+		e.lastLogged = time.Now()
+		println(fmt.Sprintf("element: %+v", e))
+	}
 }

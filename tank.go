@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	tankSpeed = 0.05
+	tankSpeed = 0.1
 )
 
 type tank struct {
@@ -19,7 +19,7 @@ func newTank() (t tank) {
 			y: 32,
 		},
 		chunk: sdl.Rect{
-			X: 130,
+			X: 0,
 			Y: 684,
 			H: 32,
 			W: 32,
@@ -31,16 +31,22 @@ func newTank() (t tank) {
 }
 
 func (t *tank) update() {
-	keys := sdl.GetKeyboardState()
+	t.element.velocity.reset()
 
-	switch uint8(1) {
-	case keys[sdl.SCANCODE_LEFT]:
-		t.element.angle = 270
-		t.element.position.x -= tankSpeed
-		break
-	case keys[sdl.SCANCODE_RIGHT]:
-		t.element.angle = 90
-		t.element.position.x += tankSpeed
-		break
+	keys := sdl.GetKeyboardState()
+	if keys[sdl.SCANCODE_LEFT] == 1 {
+		t.element.velocity.x = -tankSpeed
 	}
+	if keys[sdl.SCANCODE_RIGHT] == 1 {
+		t.element.velocity.x = tankSpeed
+	}
+	if keys[sdl.SCANCODE_DOWN] == 1 {
+		t.element.velocity.y = tankSpeed
+	}
+	if keys[sdl.SCANCODE_UP] == 1 {
+		t.element.velocity.y = -tankSpeed
+	}
+
+	t.element.position.x += t.element.velocity.x * delta
+	t.element.position.y += t.element.velocity.y * delta
 }

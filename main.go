@@ -1,10 +1,13 @@
 package main
 
 import (
+	"time"
+
 	"github.com/veandco/go-sdl2/sdl"
 )
 
 var art *sdl.Texture
+var delta float64
 
 func main() {
 	if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
@@ -36,6 +39,7 @@ func main() {
 
 	running := true
 	for running {
+		beginningOfFrame := time.Now()
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch event.(type) {
 			case *sdl.QuitEvent:
@@ -58,6 +62,10 @@ func main() {
 		tank.update()
 		tank.element.draw(renderer)
 
+		// log element every second
+		tank.element.print(time.Second)
+
 		renderer.Present()
+		delta = time.Since(beginningOfFrame).Seconds() * 1000
 	}
 }
