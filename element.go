@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -11,6 +14,8 @@ type element struct {
 	collisionSpace []int
 	active         bool
 	chunk          sdl.Rect
+	// log helper
+	lastLogged time.Time
 }
 
 func (e *element) draw(renderer *sdl.Renderer) {
@@ -30,4 +35,11 @@ func (e *element) draw(renderer *sdl.Renderer) {
 
 func (e *element) update() {
 
+}
+
+func (e *element) print(every time.Duration) {
+	if time.Since(e.lastLogged) >= every {
+		e.lastLogged = time.Now()
+		println(fmt.Sprintf("element: %+v", e))
+	}
 }
