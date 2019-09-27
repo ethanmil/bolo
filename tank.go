@@ -57,7 +57,7 @@ func (t *tank) update() {
 	}
 
 	if movement {
-		t.element.angle = t.velocity.getAngleInDegrees()
+		t.element.angle = t.velocity.getAngle()
 	}
 
 	t.element.position.x += t.velocity.x * delta

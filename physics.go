@@ -12,6 +12,6 @@ func (v *vector) reset() {
 	v.y = 0
 }
 
-func (v *vector) getAngleInDegrees() float64 {
+func (v *vector) getAngle() float64 {
 	return math.Atan2(v.y, v.x) * (180 / math.Pi)
 }
