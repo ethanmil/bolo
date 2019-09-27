@@ -32,11 +32,6 @@ func main() {
 
 	tank := newTank()
 
-	// err = window.UpdateSurface()
-	// if err != nil {
-	// 	panic(err)
-	// }
-
 	running := true
 	for running {
 		beginningOfFrame := time.Now()
