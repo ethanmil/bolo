@@ -62,8 +62,8 @@ func main() {
 		tank.update()
 		tank.element.draw(renderer)
 
-		// log element every 5 seconds
-		tank.element.print(time.Second * 5)
+		// log element every second
+		tank.element.print(time.Second)
 
 		renderer.Present()
 		delta = time.Since(beginningOfFrame).Seconds() * 1000

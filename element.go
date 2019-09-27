@@ -9,7 +9,7 @@ import (
 
 type element struct {
 	position       vector
-	angle          float64
+	velocity       vector
 	size           vector
 	collisionSpace []int
 	active         bool
@@ -27,7 +27,7 @@ func (e *element) draw(renderer *sdl.Renderer) {
 		art,
 		&sdl.Rect{X: int32(e.chunk.X), Y: int32(e.chunk.Y), W: int32(e.size.x), H: int32(e.size.y)},
 		&sdl.Rect{X: int32(e.position.x), Y: int32(e.position.y), W: int32(e.chunk.W), H: int32(e.chunk.H)},
-		e.angle,
+		e.velocity.getAngle(),
 		&sdl.Point{X: int32(e.size.x / 2), Y: int32(e.size.y / 2)},
 		sdl.FLIP_NONE,
 	)

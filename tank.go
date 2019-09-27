@@ -9,8 +9,7 @@ const (
 )
 
 type tank struct {
-	element  *element
-	velocity vector
+	element *element
 }
 
 func newTank() (t tank) {
@@ -32,34 +31,22 @@ func newTank() (t tank) {
 }
 
 func (t *tank) update() {
+	t.element.velocity.reset()
 
 	keys := sdl.GetKeyboardState()
-
-	movement := false
-
-	t.velocity.reset()
-
 	if keys[sdl.SCANCODE_LEFT] == 1 {
-		movement = true
-		t.velocity.x = -tankSpeed
+		t.element.velocity.x = -tankSpeed
 	}
 	if keys[sdl.SCANCODE_RIGHT] == 1 {
-		movement = true
-		t.velocity.x = tankSpeed
+		t.element.velocity.x = tankSpeed
 	}
 	if keys[sdl.SCANCODE_DOWN] == 1 {
-		movement = true
-		t.velocity.y = tankSpeed
+		t.element.velocity.y = tankSpeed
 	}
 	if keys[sdl.SCANCODE_UP] == 1 {
-		movement = true
-		t.velocity.y = -tankSpeed
+		t.element.velocity.y = -tankSpeed
 	}
 
-	if movement {
-		t.element.angle = t.velocity.getAngle()
-	}
-
-	t.element.position.x += t.velocity.x * delta
-	t.element.position.y += t.velocity.y * delta
+	t.element.position.x += t.element.velocity.x * delta
+	t.element.position.y += t.element.velocity.y * delta
 }
