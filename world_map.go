@@ -9,17 +9,29 @@ type worldMap struct {
 
 func newWorldMap(size vector) (wm worldMap) {
 	wm.size = size
+	wm.tiles = make([][]tile, int(size.x))
 	for x := 0; x < int(size.x); x++ {
+		wm.tiles[x] = make([]tile, int(size.y))
 		for y := 0; y < int(size.y); y++ {
-			wm.tiles[x][y] = newTile("water")
+			wm.tiles[x][y] = newTile(
+				"water",
+				vector{
+					x: float64(x * 32), // TODO: tile size shouldn't be hardcoded
+					y: float64(y * 32), // TODO: tile size shouldn't be hardcoded
+				},
+			)
 		}
 	}
 
 	return wm
 }
 
-func (wm *worldMap) draw() {
-	
+func (wm *worldMap) draw(renderer *sdl.Renderer) {
+	for x := 0; x < int(wm.size.x); x++ {
+		for y := 0; y < int(wm.size.y); y++ {
+			wm.tiles[x][y].draw(renderer)
+		}
+	}
 }
 
 type tile struct {
@@ -27,7 +39,7 @@ type tile struct {
 	position vector
 }
 
-func newTile(typ string) (t tile) {
+func newTile(typ string, position vector) (t tile) {
 	switch typ {
 	case "water":
 		t.sprite = sprite{
@@ -45,5 +57,11 @@ func newTile(typ string) (t tile) {
 		break
 	}
 
+	t.position = position
+
 	return t
+}
+
+func (t *tile) draw(renderer *sdl.Renderer) {
+	t.sprite.draw(t.position, 0, renderer)
 }

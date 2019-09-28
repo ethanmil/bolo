@@ -30,6 +30,8 @@ func main() {
 
 	art = newTexture(renderer, "images/art.bmp")
 
+	world := newWorldMap(vector{x: 50, y: 50})
+
 	tank := newTank()
 
 	running := true
@@ -53,6 +55,8 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+
+		world.draw(renderer)
 
 		tank.update()
 		tank.element.draw(renderer)
