@@ -14,15 +14,17 @@ type tank struct {
 
 func newTank() (t tank) {
 	t.element = &element{
-		size: vector{
-			x: 32,
-			y: 32,
-		},
-		chunk: sdl.Rect{
-			X: 0,
-			Y: 684,
-			H: 32,
-			W: 32,
+		sprite: sprite{
+			size: vector{
+				x: 32,
+				y: 32,
+			},
+			chunk: sdl.Rect{
+				X: 0,
+				Y: 684,
+				H: 32,
+				W: 32,
+			},
 		},
 		active: true,
 	}

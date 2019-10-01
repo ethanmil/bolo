@@ -30,12 +30,9 @@ func main() {
 
 	art = newTexture(renderer, "images/art.bmp")
 
-	tank := newTank()
+	world := newWorldMap(vector{x: 50, y: 50})
 
-	// err = window.UpdateSurface()
-	// if err != nil {
-	// 	panic(err)
-	// }
+	tank := newTank()
 
 	running := true
 	for running {
@@ -58,6 +55,8 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+
+		world.draw(renderer)
 
 		tank.update()
 		tank.element.draw(renderer)
