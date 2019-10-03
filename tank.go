@@ -1,15 +1,19 @@
 package main
 
 import (
+	"time"
+
 	"github.com/veandco/go-sdl2/sdl"
 )
 
 const (
-	tankSpeed = 0.1
+	tankSpeed      = 0.1
+	bulletCooldown = time.Millisecond * 250
 )
 
 type tank struct {
-	element *element
+	element  *element
+	lastShot time.Time
 }
 
 func newTank() (t tank) {
@@ -33,7 +37,10 @@ func newTank() (t tank) {
 }
 
 func (t *tank) shoot() {
-	newBullet(t.element.angle, t.element.angle.getVector(), t.element.position)
+	if time.Since(t.lastShot) >= bulletCooldown {
+		newBullet(t.element.angle, t.element.angle.getVector(), t.element.position)
+		t.lastShot = time.Now()
+	}
 }
 
 func (t *tank) update() {
