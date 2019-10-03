@@ -10,6 +10,7 @@ var art *sdl.Texture
 var delta float64
 
 func main() {
+	// set up everything
 	if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
 		panic(err)
 	}
@@ -29,11 +30,12 @@ func main() {
 	defer renderer.Destroy()
 
 	art = newTexture(renderer, "images/art.bmp")
-
 	world := newWorldMap(vector{x: 50, y: 50}, 1)
 
+	// set up players
 	tank := newTank()
 
+	// game loop
 	running := true
 	for running {
 		beginningOfFrame := time.Now()
@@ -47,23 +49,25 @@ func main() {
 			}
 		}
 
-		err = renderer.SetDrawColor(255, 255, 255, 255)
-		if err != nil {
-			panic(err)
-		}
-		err = renderer.Clear()
-		if err != nil {
-			panic(err)
-		}
-
+		// draw the world
 		world.draw(renderer)
 
+		// draw players
 		tank.update()
 		tank.element.draw(renderer)
-
-		// log element every second
+		// log tank every second
 		tank.element.print(time.Second)
 
+		// draw bullets
+		for _, bullet := range bullets { // bullets comes from the bullet class
+			if bullet != nil {
+				bullet.update()
+				bullet.element.draw(renderer)
+				bullet.element.print(time.Second)
+			}
+		}
+
+		// present everything
 		renderer.Present()
 		delta = time.Since(beginningOfFrame).Seconds() * 1000
 	}

@@ -32,6 +32,10 @@ func newTank() (t tank) {
 	return t
 }
 
+func (t *tank) shoot() {
+	newBullet(t.element.angle, t.element.angle.getVector(), t.element.position)
+}
+
 func (t *tank) update() {
 	t.element.velocity.reset()
 
@@ -47,6 +51,10 @@ func (t *tank) update() {
 	}
 	if keys[sdl.SCANCODE_UP] == 1 {
 		t.element.velocity.y = -tankSpeed
+	}
+
+	if keys[sdl.SCANCODE_SPACE] == 1 {
+		t.shoot()
 	}
 
 	t.element.position.x += t.element.velocity.x * delta

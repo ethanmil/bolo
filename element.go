@@ -11,7 +11,7 @@ type element struct {
 	sprite         sprite
 	position       vector
 	velocity       vector
-	angle          float64
+	angle          angle
 	collisionSpace []int
 	active         bool
 
@@ -25,10 +25,10 @@ func (e *element) draw(renderer *sdl.Renderer) {
 	}
 
 	if e.velocity.x != 0 || e.velocity.y != 0 {
-		e.angle = e.velocity.getAngle() // TODO: resolve this to not be so jumpy
+		e.angle = newAngle(e.velocity.getAngle()) // TODO: resolve this to not be so jumpy
 	}
 
-	e.sprite.draw(e.position, e.angle, renderer)
+	e.sprite.draw(e.position, e.angle.degrees, renderer)
 }
 
 func (e *element) update() {
