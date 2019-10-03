@@ -30,7 +30,7 @@ func main() {
 
 	art = newTexture(renderer, "images/art.bmp")
 
-	world := newWorldMap(vector{x: 50, y: 50})
+	world := newWorldMap(vector{x: 50, y: 50}, 1)
 
 	tank := newTank()
 
