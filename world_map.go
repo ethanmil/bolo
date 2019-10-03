@@ -2,12 +2,16 @@ package main
 
 import "github.com/veandco/go-sdl2/sdl"
 
+const (
+	tileSize = 32
+)
+
 type worldMap struct {
 	size  vector
 	tiles [][]tile
 }
 
-func newWorldMap(size vector) (wm worldMap) {
+func newWorldMap(size vector, scale float64) (wm worldMap) {
 	wm.size = size
 	wm.tiles = make([][]tile, int(size.x))
 	for x := 0; x < int(size.x); x++ {
@@ -16,8 +20,8 @@ func newWorldMap(size vector) (wm worldMap) {
 			wm.tiles[x][y] = newTile(
 				"water",
 				vector{
-					x: float64(x * 32), // TODO: tile size shouldn't be hardcoded
-					y: float64(y * 32), // TODO: tile size shouldn't be hardcoded
+					x: float64(x) * float64(tileSize) * scale,
+					y: float64(y) * float64(tileSize) * scale,
 				},
 			)
 		}
