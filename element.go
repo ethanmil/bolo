@@ -28,7 +28,7 @@ func (e *element) draw(renderer *sdl.Renderer) {
 		e.angle = newAngle(e.velocity.getAngle()) // TODO: resolve this to not be so jumpy
 	}
 
-	e.sprite.draw(e.position, e.angle.degrees, renderer)
+	e.sprite.draw(e.position, e.angle.getDegrees(), renderer)
 }
 
 func (e *element) update() {

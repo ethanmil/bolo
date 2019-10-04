@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"time"
 
 	"github.com/veandco/go-sdl2/sdl"
@@ -38,9 +39,15 @@ func newTank() (t tank) {
 
 func (t *tank) shoot() {
 	if time.Since(t.lastShot) >= bulletCooldown {
-		newBullet(t.element.angle, t.element.angle.getVector(), t.element.position)
+		newBullet(t.element.angle, t.element.angle.getVector(), t.getGunPosition())
 		t.lastShot = time.Now()
 	}
+}
+
+func (t *tank) getGunPosition() (v vector) {
+	v.x = t.element.position.x + (math.Cos(t.element.angle.radians) * t.element.sprite.size.x)
+	v.y = t.element.position.y + (math.Sin(t.element.angle.radians) * t.element.sprite.size.y)
+	return v
 }
 
 func (t *tank) update() {

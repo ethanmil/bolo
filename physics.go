@@ -13,27 +13,31 @@ func (v *vector) reset() {
 }
 
 func (v *vector) getAngle() float64 {
-	return math.Atan2(v.y, v.x) * (180 / math.Pi)
+	return math.Atan2(v.y, v.x)
 }
 
 type angle struct {
-	degrees float64
+	radians float64
 }
 
-func newAngle(degrees float64) angle {
+func newAngle(radians float64) angle {
 	return angle{
-		degrees: degrees,
+		radians: radians,
 	}
 }
 
 func (a *angle) reset() {
-	a.degrees = 0
+	a.radians = 0
 }
 
 func (a *angle) getVector() (v vector) {
-	v.x = getDegrees(math.Cos(getRadians(a.degrees))) / 360 // dividing by 360 scales the velocity to 0-1
-	v.y = getDegrees(math.Sin(getRadians(a.degrees))) / 360 // dividing by 360 scales the velocity to 0-1
+	v.x = getDegrees(math.Cos(a.radians)) / 360 // dividing by 360 scales the velocity to 0-1
+	v.y = getDegrees(math.Sin(a.radians)) / 360 // dividing by 360 scales the velocity to 0-1
 	return v
+}
+
+func (a *angle) getDegrees() float64 {
+	return getDegrees(a.radians)
 }
 
 func getDegrees(radians float64) float64 {

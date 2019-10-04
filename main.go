@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/veandco/go-sdl2/sdl"
@@ -56,14 +57,15 @@ func main() {
 		tank.update()
 		tank.element.draw(renderer)
 		// log tank every second
-		tank.element.print(time.Second)
+		// tank.element.print(time.Second)
+		println(fmt.Sprintf("Gun position: %+v | Tank position: %+v", tank.getGunPosition(), tank.element.position))
 
 		// draw bullets
 		for _, bullet := range bullets { // bullets comes from the bullet class
 			if bullet != nil {
 				bullet.update()
 				bullet.element.draw(renderer)
-				bullet.element.print(time.Second)
+				// bullet.element.print(time.Second)
 			}
 		}
 
