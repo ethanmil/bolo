@@ -45,8 +45,8 @@ func (t *tank) shoot() {
 }
 
 func (t *tank) getGunPosition() (v vector) {
-	v.x = t.element.position.x + (math.Cos(t.element.angle.radians) * t.element.sprite.size.x)
-	v.y = t.element.position.y + (math.Sin(t.element.angle.radians) * t.element.sprite.size.y)
+	v.x = (t.element.position.x + t.element.sprite.size.x/2) + (math.Cos(t.element.angle.radians) * t.element.sprite.size.x / 2)
+	v.y = (t.element.position.y + t.element.sprite.size.y/2) + (math.Sin(t.element.angle.radians) * t.element.sprite.size.y / 2)
 	return v
 }
 
