@@ -15,9 +15,9 @@ func main() {
 	// set up the window, renderer, & main texture
 	sdlSetup()
 	// defer the destruction of window, renderer
-	// defer sdl.Quit()
-	// defer window.Destroy()
-	// defer renderer.Destroy()
+	defer sdl.Quit()
+	defer window.Destroy()
+	defer renderer.Destroy()
 
 	// set up the world map
 	world := newWorldMap(vector{x: 50, y: 50}, 1)
