@@ -1,36 +1,25 @@
 package main
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/veandco/go-sdl2/sdl"
 )
 
+var window *sdl.Window
+var renderer *sdl.Renderer
 var art *sdl.Texture
 var delta float64
 
 func main() {
-	// set up everything
-	if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
-		panic(err)
-	}
-	defer sdl.Quit()
+	// set up the window, renderer, & main texture
+	sdlSetup()
+	// defer the destruction of window, renderer
+	// defer sdl.Quit()
+	// defer window.Destroy()
+	// defer renderer.Destroy()
 
-	window, err := sdl.CreateWindow("bolo", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
-		1200, 800, sdl.WINDOW_OPENGL)
-	if err != nil {
-		panic(err)
-	}
-	defer window.Destroy()
-
-	renderer, err := sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
-	if err != nil {
-		panic(err)
-	}
-	defer renderer.Destroy()
-
-	art = newTexture(renderer, "images/art.bmp")
+	// set up the world map
 	world := newWorldMap(vector{x: 50, y: 50}, 1)
 
 	// set up players
@@ -51,21 +40,17 @@ func main() {
 		}
 
 		// draw the world
-		world.draw(renderer)
+		world.draw()
 
 		// draw players
 		tank.update()
-		tank.element.draw(renderer)
-		// log tank every second
-		// tank.element.print(time.Second)
-		println(fmt.Sprintf("Gun position: %+v | Tank position: %+v", tank.getGunPosition(), tank.element.position))
+		tank.element.draw()
 
 		// draw bullets
 		for _, bullet := range bullets { // bullets comes from the bullet class
 			if bullet != nil {
 				bullet.update()
-				bullet.element.draw(renderer)
-				// bullet.element.print(time.Second)
+				bullet.element.draw()
 			}
 		}
 
@@ -73,4 +58,24 @@ func main() {
 		renderer.Present()
 		delta = time.Since(beginningOfFrame).Seconds() * 1000
 	}
+}
+
+func sdlSetup() {
+	var err error
+	if err = sdl.Init(sdl.INIT_EVERYTHING); err != nil {
+		panic(err)
+	}
+
+	window, err = sdl.CreateWindow("bolo", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
+		1200, 800, sdl.WINDOW_OPENGL)
+	if err != nil {
+		panic(err)
+	}
+
+	renderer, err = sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
+	if err != nil {
+		panic(err)
+	}
+
+	art = newTexture(renderer, "images/art.bmp")
 }

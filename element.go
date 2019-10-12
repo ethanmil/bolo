@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"time"
-
-	"github.com/veandco/go-sdl2/sdl"
 )
 
 type element struct {
@@ -19,7 +17,7 @@ type element struct {
 	lastLogged time.Time
 }
 
-func (e *element) draw(renderer *sdl.Renderer) {
+func (e *element) draw() {
 	if !e.active {
 		return
 	}

@@ -30,10 +30,10 @@ func newWorldMap(size vector, scale float64) (wm worldMap) {
 	return wm
 }
 
-func (wm *worldMap) draw(renderer *sdl.Renderer) {
+func (wm *worldMap) draw() {
 	for x := 0; x < int(wm.size.x); x++ {
 		for y := 0; y < int(wm.size.y); y++ {
-			wm.tiles[x][y].draw(renderer)
+			wm.tiles[x][y].draw()
 		}
 	}
 }
@@ -66,6 +66,6 @@ func newTile(typ string, position vector) (t tile) {
 	return t
 }
 
-func (t *tile) draw(renderer *sdl.Renderer) {
+func (t *tile) draw() {
 	t.sprite.draw(t.position, 0, renderer)
 }
