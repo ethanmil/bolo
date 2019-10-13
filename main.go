@@ -6,34 +6,26 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
+var window *sdl.Window
+var renderer *sdl.Renderer
 var art *sdl.Texture
 var delta float64
 
 func main() {
-	if err := sdl.Init(sdl.INIT_EVERYTHING); err != nil {
-		panic(err)
-	}
+	// set up the window, renderer, & main texture
+	sdlSetup()
+	// defer the destruction of window, renderer
 	defer sdl.Quit()
-
-	window, err := sdl.CreateWindow("bolo", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
-		1200, 800, sdl.WINDOW_OPENGL)
-	if err != nil {
-		panic(err)
-	}
 	defer window.Destroy()
-
-	renderer, err := sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
-	if err != nil {
-		panic(err)
-	}
 	defer renderer.Destroy()
 
-	art = newTexture(renderer, "images/art.bmp")
-
+	// set up the world map
 	world := newWorldMap(vector{x: 50, y: 50}, 1)
 
+	// set up players
 	tank := newTank()
 
+	// game loop
 	running := true
 	for running {
 		beginningOfFrame := time.Now()
@@ -47,24 +39,43 @@ func main() {
 			}
 		}
 
-		err = renderer.SetDrawColor(255, 255, 255, 255)
-		if err != nil {
-			panic(err)
-		}
-		err = renderer.Clear()
-		if err != nil {
-			panic(err)
-		}
+		// draw the world
+		world.draw()
 
-		world.draw(renderer)
-
+		// draw players
 		tank.update()
-		tank.element.draw(renderer)
+		tank.element.draw()
 
-		// log element every second
-		tank.element.print(time.Second)
+		// draw bullets
+		for _, bullet := range bullets { // bullets comes from the bullet class
+			if bullet != nil {
+				bullet.update()
+				bullet.element.draw()
+			}
+		}
 
+		// present everything
 		renderer.Present()
 		delta = time.Since(beginningOfFrame).Seconds() * 1000
 	}
+}
+
+func sdlSetup() {
+	var err error
+	if err = sdl.Init(sdl.INIT_EVERYTHING); err != nil {
+		panic(err)
+	}
+
+	window, err = sdl.CreateWindow("bolo", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
+		1200, 800, sdl.WINDOW_OPENGL)
+	if err != nil {
+		panic(err)
+	}
+
+	renderer, err = sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
+	if err != nil {
+		panic(err)
+	}
+
+	art = newTexture(renderer, "images/art.bmp")
 }
