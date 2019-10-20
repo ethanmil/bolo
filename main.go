@@ -20,7 +20,7 @@ func main() {
 	defer renderer.Destroy()
 
 	// set up the world map
-	world := newWorldMap(vector{x: 50, y: 50}, 1)
+	world := newWorldMap("./maps/test.txt", 1)
 
 	// set up players
 	tank := newTank()
