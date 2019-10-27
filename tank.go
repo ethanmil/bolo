@@ -32,6 +32,8 @@ func newTank() (t tank) {
 			},
 		},
 		active: true,
+		speed:  tankSpeed,
+		angle:  newAngle(0),
 	}
 
 	return t
@@ -39,7 +41,7 @@ func newTank() (t tank) {
 
 func (t *tank) shoot() {
 	if time.Since(t.lastShot) >= bulletCooldown {
-		newBullet(t.element.angle, t.element.angle.getVector(), t.getGunPosition())
+		newBullet(t.element.angle, t.element.speed, t.getGunPosition())
 		t.lastShot = time.Now()
 	}
 }
@@ -51,26 +53,27 @@ func (t *tank) getGunPosition() (v vector) {
 }
 
 func (t *tank) update() {
-	t.element.velocity.reset()
+	// t.element.speed = 0
 
 	keys := sdl.GetKeyboardState()
 	if keys[sdl.SCANCODE_LEFT] == 1 {
-		t.element.velocity.x = -tankSpeed
+		t.element.angle = newAngle(math.Pi)
 	}
 	if keys[sdl.SCANCODE_RIGHT] == 1 {
-		t.element.velocity.x = tankSpeed
+		t.element.angle = newAngle(0)
 	}
 	if keys[sdl.SCANCODE_DOWN] == 1 {
-		t.element.velocity.y = tankSpeed
+		t.element.angle = newAngle(math.Pi / 2)
 	}
 	if keys[sdl.SCANCODE_UP] == 1 {
-		t.element.velocity.y = -tankSpeed
+		t.element.angle = newAngle(3 * math.Pi / 2)
 	}
 
 	if keys[sdl.SCANCODE_SPACE] == 1 {
 		t.shoot()
 	}
 
-	t.element.position.x += t.element.velocity.x * delta
-	t.element.position.y += t.element.velocity.y * delta
+	movement := t.element.angle.getVector()
+	t.element.position.x += movement.x * t.element.speed * delta
+	t.element.position.y += movement.y * t.element.speed * delta
 }

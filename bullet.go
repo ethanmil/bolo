@@ -14,7 +14,7 @@ type bullet struct {
 
 var bullets = make([]*bullet, 50)
 
-func newBullet(angle angle, velocity vector, position vector) {
+func newBullet(angle angle, speed float64, position vector) {
 	bullet := &bullet{
 		element: &element{
 			sprite: sprite{
@@ -31,7 +31,7 @@ func newBullet(angle angle, velocity vector, position vector) {
 			},
 			active:   true,
 			angle:    angle,
-			velocity: velocity,
+			speed:    speed,
 			position: position,
 		},
 	}
@@ -40,6 +40,7 @@ func newBullet(angle angle, velocity vector, position vector) {
 }
 
 func (b *bullet) update() {
-	b.element.position.x += b.element.velocity.x * delta
-	b.element.position.y += b.element.velocity.y * delta
+	movement := b.element.angle.getVector()
+	b.element.position.x += movement.x * b.element.speed * delta
+	b.element.position.y += movement.y * b.element.speed * delta
 }

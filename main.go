@@ -47,7 +47,7 @@ func main() {
 		tank.element.draw()
 
 		// draw bullets
-		for _, bullet := range bullets { // bullets comes from the bullet class
+		for _, bullet := range bullets {
 			if bullet != nil {
 				bullet.update()
 				bullet.element.draw()
