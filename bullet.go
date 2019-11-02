@@ -4,10 +4,6 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-const (
-	bulletSpeed = 0.1
-)
-
 type bullet struct {
 	element *element
 }

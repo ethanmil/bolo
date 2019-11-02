@@ -26,7 +26,9 @@ func (e *element) draw() {
 }
 
 func (e *element) update() {
-
+	movement := e.angle.getVector()
+	e.position.x += movement.x * e.speed * delta
+	e.position.y += movement.y * e.speed * delta
 }
 
 func (e *element) print(every time.Duration) {
