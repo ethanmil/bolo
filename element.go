@@ -8,7 +8,7 @@ import (
 type element struct {
 	sprite         sprite
 	position       vector
-	velocity       vector
+	speed          float64
 	angle          angle
 	collisionSpace []int
 	active         bool
@@ -22,15 +22,13 @@ func (e *element) draw() {
 		return
 	}
 
-	if e.velocity.x != 0 || e.velocity.y != 0 {
-		e.angle = newAngle(e.velocity.getAngle()) // TODO: resolve this to not be so jumpy
-	}
-
 	e.sprite.draw(e.position, e.angle.getDegrees(), renderer)
 }
 
 func (e *element) update() {
-
+	movement := e.angle.getVector()
+	e.position.x += movement.x * e.speed * delta
+	e.position.y += movement.y * e.speed * delta
 }
 
 func (e *element) print(every time.Duration) {

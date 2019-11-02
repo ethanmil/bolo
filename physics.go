@@ -31,8 +31,8 @@ func (a *angle) reset() {
 }
 
 func (a *angle) getVector() (v vector) {
-	v.x = getDegrees(math.Cos(a.radians)) / 360 // dividing by 360 scales the velocity to 0-1
-	v.y = getDegrees(math.Sin(a.radians)) / 360 // dividing by 360 scales the velocity to 0-1
+	v.x = (math.Cos(a.radians))
+	v.y = (math.Sin(a.radians))
 	return v
 }
 
