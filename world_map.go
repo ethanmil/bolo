@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/ethanmil/go-engine/physics"
 )
 
 const (
@@ -12,7 +14,7 @@ const (
 )
 
 type worldMap struct {
-	size  vector
+	size  physics.Vector
 	tiles [][]tile
 }
 
@@ -35,9 +37,9 @@ func newWorldMap(path string, scale float64) (wm worldMap) {
 	worldWidth := len(lines[0])/2 + 1
 	worldHeight := len(lines)
 
-	wm.size = vector{
-		x: float64(worldWidth),
-		y: float64(worldHeight),
+	wm.size = physics.Vector{
+		X: float64(worldWidth),
+		Y: float64(worldHeight),
 	}
 	wm.tiles = make([][]tile, int(worldHeight))
 	for y := 0; y < int(worldHeight); y++ {
@@ -46,9 +48,9 @@ func newWorldMap(path string, scale float64) (wm worldMap) {
 
 			wm.tiles[y][x] = newTile(
 				tileType,
-				vector{
-					x: float64(x) * float64(tileSize) * scale,
-					y: float64(y) * float64(tileSize) * scale,
+				physics.Vector{
+					X: float64(x) * float64(tileSize) * scale,
+					Y: float64(y) * float64(tileSize) * scale,
 				},
 			)
 		}
@@ -58,8 +60,8 @@ func newWorldMap(path string, scale float64) (wm worldMap) {
 }
 
 func (wm *worldMap) draw() {
-	for y := 0; y < int(wm.size.y); y++ {
-		for x := 0; x < int(wm.size.x); x++ {
+	for y := 0; y < int(wm.size.Y); y++ {
+		for x := 0; x < int(wm.size.X); x++ {
 			wm.tiles[y][x].draw()
 		}
 	}

@@ -44,13 +44,13 @@ func main() {
 
 		// draw players
 		tank.update()
-		tank.element.draw()
+		tank.element.Draw(art, renderer)
 
 		// draw bullets
 		for _, bullet := range bullets {
 			if bullet != nil {
 				bullet.update()
-				bullet.element.draw()
+				bullet.element.Draw(art, renderer)
 			}
 		}
 

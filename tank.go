@@ -4,6 +4,8 @@ import (
 	"math"
 	"time"
 
+	"github.com/ethanmil/go-engine/animation"
+	"github.com/ethanmil/go-engine/physics"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -14,26 +16,26 @@ const (
 )
 
 type tank struct {
-	element  *element
+	element  *animation.Element
 	lastShot time.Time
 }
 
 func newTank() (t tank) {
-	t.element = &element{
-		sprite: sprite{
-			size: vector{
-				x: 32,
-				y: 32,
+	t.element = &animation.Element{
+		Sprite: animation.Sprite{
+			Size: physics.Vector{
+				X: 32,
+				Y: 32,
 			},
-			chunk: sdl.Rect{
+			Chunk: sdl.Rect{
 				X: 0,
 				Y: 684,
 				H: 32,
 				W: 32,
 			},
 		},
-		active: true,
-		speed:  tankSpeed,
+		Active: true,
+		Speed:  tankSpeed,
 	}
 
 	return t
@@ -41,14 +43,14 @@ func newTank() (t tank) {
 
 func (t *tank) shoot() {
 	if time.Since(t.lastShot) >= bulletCooldown {
-		newBullet(t.element.angle, bulletSpeed, t.getGunPosition())
+		newBullet(t.element.Angle, bulletSpeed, t.getGunPosition())
 		t.lastShot = time.Now()
 	}
 }
 
-func (t *tank) getGunPosition() (v vector) {
-	v.x = (t.element.position.x + t.element.sprite.size.x/2) + (math.Cos(t.element.angle.radians) * t.element.sprite.size.x / 2)
-	v.y = (t.element.position.y + t.element.sprite.size.y/2) + (math.Sin(t.element.angle.radians) * t.element.sprite.size.y / 2)
+func (t *tank) getGunPosition() (v physics.Vector) {
+	v.X = (t.element.Position.X + t.element.Sprite.Size.X/2) + (math.Cos(float64(t.element.Angle)) * t.element.Sprite.Size.X / 2)
+	v.Y = (t.element.Position.Y + t.element.Sprite.Size.Y/2) + (math.Sin(float64(t.element.Angle)) * t.element.Sprite.Size.Y / 2)
 	return v
 }
 
@@ -56,31 +58,31 @@ func (t *tank) update() {
 	keys := sdl.GetKeyboardState()
 	move := false
 	if keys[sdl.SCANCODE_LEFT] == 1 {
-		t.element.angle = newAngle(math.Pi)
+		t.element.Angle = physics.NewAngle(math.Pi)
 		move = true
 	}
 	if keys[sdl.SCANCODE_RIGHT] == 1 {
-		t.element.angle = newAngle(0)
+		t.element.Angle = physics.NewAngle(0)
 		move = true
 	}
 	if keys[sdl.SCANCODE_DOWN] == 1 {
-		t.element.angle = newAngle(math.Pi / 2)
+		t.element.Angle = physics.NewAngle(math.Pi / 2)
 		move = true
 	}
 	if keys[sdl.SCANCODE_UP] == 1 {
-		t.element.angle = newAngle(3 * math.Pi / 2)
+		t.element.Angle = physics.NewAngle(3 * math.Pi / 2)
 		move = true
 	}
 
 	if move {
-		t.element.speed = tankSpeed
+		t.element.Speed = tankSpeed
 	} else {
-		t.element.speed = 0
+		t.element.Speed = 0
 	}
 
 	if keys[sdl.SCANCODE_SPACE] == 1 {
 		t.shoot()
 	}
 
-	t.element.update()
+	t.element.Update(delta)
 }
