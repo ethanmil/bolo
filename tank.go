@@ -57,19 +57,19 @@ func (t *tank) getGunPosition() (v physics.Vector) {
 func (t *tank) update() {
 	keys := sdl.GetKeyboardState()
 	move := false
-	if keys[sdl.SCANCODE_LEFT] == 1 {
+	if keys[sdl.SCANCODE_A] == 1 {
 		t.element.Angle = physics.NewAngle(math.Pi)
 		move = true
 	}
-	if keys[sdl.SCANCODE_RIGHT] == 1 {
+	if keys[sdl.SCANCODE_D] == 1 {
 		t.element.Angle = physics.NewAngle(0)
 		move = true
 	}
-	if keys[sdl.SCANCODE_DOWN] == 1 {
+	if keys[sdl.SCANCODE_S] == 1 {
 		t.element.Angle = physics.NewAngle(math.Pi / 2)
 		move = true
 	}
-	if keys[sdl.SCANCODE_UP] == 1 {
+	if keys[sdl.SCANCODE_W] == 1 {
 		t.element.Angle = physics.NewAngle(3 * math.Pi / 2)
 		move = true
 	}
