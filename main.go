@@ -3,6 +3,8 @@ package main
 import (
 	"time"
 
+	"github.com/ethanmil/bolo/bullet"
+	"github.com/ethanmil/bolo/tank"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -23,7 +25,10 @@ func main() {
 	world := newWorldMap("./maps/test.txt", 1)
 
 	// set up players
-	tank := newTank()
+	tank := tank.NewTank()
+
+	// set up bullets
+	bullets := make([]*bullet.Bullet, 50)
 
 	// game loop
 	running := true
@@ -43,14 +48,14 @@ func main() {
 		world.draw()
 
 		// draw players
-		tank.update()
-		tank.element.Draw(art, renderer)
+		tank.Update(delta)
+		tank.Draw(art, renderer)
 
 		// draw bullets
 		for _, bullet := range bullets {
 			if bullet != nil {
-				bullet.update()
-				bullet.element.Draw(art, renderer)
+				bullet.Update(delta)
+				bullet.Draw(art, renderer)
 			}
 		}
 

@@ -1,4 +1,4 @@
-package main
+package bullet
 
 import (
 	"github.com/ethanmil/go-engine/animation"
@@ -6,14 +6,14 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-type bullet struct {
+// Bullet -
+type Bullet struct {
 	element *animation.Element
 }
 
-var bullets = make([]*bullet, 50)
-
-func newBullet(angle physics.Angle, speed float64, position physics.Vector) {
-	bullet := &bullet{
+// NewBullet -
+func NewBullet(angle physics.Angle, speed float64, position physics.Vector) Bullet {
+	return Bullet{
 		element: &animation.Element{
 			Sprite: animation.Sprite{
 				Size: physics.Vector{
@@ -34,11 +34,17 @@ func newBullet(angle physics.Angle, speed float64, position physics.Vector) {
 		},
 	}
 
-	bullets = append(bullets, bullet)
+	// bullets = append(bullets, bullet)
 }
 
-func (b *bullet) update() {
+// Update -
+func (b *Bullet) Update(delta float64) {
 	movement := b.element.Angle.GetVector()
 	b.element.Position.X += movement.X * b.element.Speed * delta
 	b.element.Position.Y += movement.Y * b.element.Speed * delta
+}
+
+// Draw -
+func (b *Bullet) Draw(texture *sdl.Texture, renderer *sdl.Renderer) {
+	b.element.Draw(texture, renderer)
 }
