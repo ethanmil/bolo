@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/ethanmil/bolo/bullet"
+	"github.com/ethanmil/bolo/maps"
 	"github.com/ethanmil/bolo/tank"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -22,7 +23,7 @@ func main() {
 	defer renderer.Destroy()
 
 	// set up the world map
-	world := newWorldMap("./maps/test.txt", 1)
+	world := maps.NewWorldMap("./assets/test_map.txt", 1)
 
 	// set up players
 	tank := tank.NewTank()
@@ -45,7 +46,7 @@ func main() {
 		}
 
 		// draw the world
-		world.draw()
+		world.Draw(art, renderer)
 
 		// draw players
 		tank.Update(delta)

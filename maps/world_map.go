@@ -1,4 +1,4 @@
-package main
+package maps
 
 import (
 	"bufio"
@@ -7,18 +7,21 @@ import (
 	"strings"
 
 	"github.com/ethanmil/go-engine/physics"
+	"github.com/veandco/go-sdl2/sdl"
 )
 
 const (
 	tileSize = 32
 )
 
-type worldMap struct {
+// WorldMap -
+type WorldMap struct {
 	size  physics.Vector
-	tiles [][]tile
+	tiles [][]Tile
 }
 
-func newWorldMap(path string, scale float64) (wm worldMap) {
+// NewWorldMap -
+func NewWorldMap(path string, scale float64) (wm WorldMap) {
 	file, err := os.Open(path)
 	if err != nil {
 		println(fmt.Sprintf("Error: %+v", err))
@@ -41,12 +44,12 @@ func newWorldMap(path string, scale float64) (wm worldMap) {
 		X: float64(worldWidth),
 		Y: float64(worldHeight),
 	}
-	wm.tiles = make([][]tile, int(worldHeight))
+	wm.tiles = make([][]Tile, int(worldHeight))
 	for y := 0; y < int(worldHeight); y++ {
-		wm.tiles[y] = make([]tile, int(worldWidth))
+		wm.tiles[y] = make([]Tile, int(worldWidth))
 		for x, tileType := range strings.Split(lines[y], ",") {
 
-			wm.tiles[y][x] = newTile(
+			wm.tiles[y][x] = NewTile(
 				tileType,
 				physics.Vector{
 					X: float64(x) * float64(tileSize) * scale,
@@ -59,10 +62,11 @@ func newWorldMap(path string, scale float64) (wm worldMap) {
 	return wm
 }
 
-func (wm *worldMap) draw() {
+// Draw -
+func (wm *WorldMap) Draw(texture *sdl.Texture, renderer *sdl.Renderer) {
 	for y := 0; y < int(wm.size.Y); y++ {
 		for x := 0; x < int(wm.size.X); x++ {
-			wm.tiles[y][x].draw()
+			wm.tiles[y][x].Draw(texture, renderer)
 		}
 	}
 }
