@@ -28,6 +28,7 @@ func main() {
 	// set up players
 	tank := tank.NewTank()
 
+	// TODO - User bullet.Manager here
 	// set up bullets
 	bullets := make([]*bullet.Bullet, 50)
 
