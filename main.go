@@ -6,21 +6,23 @@ import (
 	"github.com/ethanmil/bolo/bullet"
 	"github.com/ethanmil/bolo/maps"
 	"github.com/ethanmil/bolo/tank"
+	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-var window *sdl.Window
-var renderer *sdl.Renderer
-var art *sdl.Texture
 var delta float64
 
 func main() {
-	// set up the window, renderer, & main texture
-	sdlSetup()
-	// defer the destruction of window, renderer
-	defer sdl.Quit()
-	defer window.Destroy()
-	defer renderer.Destroy()
+	bolo := NewBolo()
+
+	ebiten.SetWindowSize(800, 600)
+	ebiten.SetWindowTitle("Your game's title")
+
+	err := ebiten.RunGame(bolo)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// set up the world map
 	world := maps.NewWorldMap("./assets/test_map.txt", 1)
@@ -32,19 +34,7 @@ func main() {
 	// set up bullets
 	bullets := make([]*bullet.Bullet, 50)
 
-	// game loop
-	running := true
-	for running {
-		beginningOfFrame := time.Now()
-		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
-			switch event.(type) {
-			case *sdl.QuitEvent:
-				art.Destroy()
-				println("Quit")
-				running = false
-				break
-			}
-		}
+	bolo.HandleUpdate(screen)
 
 		// draw the world
 		world.Draw(art, renderer)
@@ -53,36 +43,42 @@ func main() {
 		tank.Update(delta)
 		tank.Draw(art, renderer)
 
-		// draw bullets
-		for _, bullet := range bullets {
-			if bullet != nil {
-				bullet.Update(delta)
-				bullet.Draw(art, renderer)
-			}
-		}
-
 		// present everything
 		renderer.Present()
 		delta = time.Since(beginningOfFrame).Seconds() * 1000
 	}
 }
 
-func sdlSetup() {
-	var err error
-	if err = sdl.Init(sdl.INIT_EVERYTHING); err != nil {
-		panic(err)
-	}
+// Bolo -
+type Bolo struct {
+	world maps.WorldMap
+	tanks []tank.Tank
+	bullets []bullet.Bullet
+}
 
-	window, err = sdl.CreateWindow("bolo", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
-		1200, 800, sdl.WINDOW_OPENGL)
-	if err != nil {
-		panic(err)
-	}
+// NewBolo -
+func NewBolo() (bolo *Bolo) {
+bolo.world = maps.NewWorldMap("./assets/test_map.txt", 1)
 
-	renderer, err = sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
-	if err != nil {
-		panic(err)
-	}
+bolo.tanks = []tank.Tank{tank.NewTank()}
 
-	art = newTexture(renderer, "images/art.bmp")
+// TODO - User bullet.Manager here
+bolo.bullets := make([]*bullet.Bullet, 50)
+
+	return bolo
+}
+
+// Update -
+func(b *Bolo) Update(screen *ebiten.Image) error {
+
+}
+
+// Draw -
+func(b *Bolo) Draw(screen *ebiten.Image) error {
+
+}
+
+// Layout -
+func(b *Bolo) Layout(width, height, int) (width, height int) {
+	return 200, 100
 }
