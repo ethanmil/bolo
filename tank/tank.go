@@ -2,14 +2,11 @@ package tank
 
 import (
 	"image"
-	"log"
-	"math"
 	"time"
 
 	"github.com/ethanmil/bolo/lib/animation"
 	"github.com/ethanmil/bolo/lib/physics"
 	"github.com/hajimehoshi/ebiten"
-	"github.com/hajimehoshi/ebiten/inpututil"
 )
 
 const (
@@ -21,6 +18,7 @@ const (
 // Tank -
 type Tank struct {
 	Element  *animation.Element
+	speed    float64
 	lastShot time.Time
 }
 
@@ -36,36 +34,37 @@ func NewTank(position physics.Vector, art *ebiten.Image) Tank {
 
 // Update -
 func (t *Tank) Update(delta float64) {
-	if inpututil.IsKeyJustPressed(ebiten.KeyA) {
-		t.Element.Angle = physics.NewAngle(math.Pi)
-		println("a hit")
+	if ebiten.IsKeyPressed(ebiten.KeyA) {
+		t.Element.Angle -= 0.02
 	}
-	if inpututil.IsKeyJustPressed(ebiten.KeyD) {
-		t.Element.Angle = physics.NewAngle(0)
+	if ebiten.IsKeyPressed(ebiten.KeyD) {
+		t.Element.Angle += 0.02
 	}
-	if inpututil.IsKeyJustPressed(ebiten.KeyS) {
-		t.Element.Angle = physics.NewAngle(math.Pi / 2)
+	if ebiten.IsKeyPressed(ebiten.KeyS) {
+		if t.speed >= 0.005 {
+			t.speed -= 0.005
+		}
 	}
-	if inpututil.IsKeyJustPressed(ebiten.KeyW) {
-		t.Element.Angle = physics.NewAngle(3 * math.Pi / 2)
+	if ebiten.IsKeyPressed(ebiten.KeyW) {
+		if t.speed < 1 {
+			t.speed += 0.01
+		}
+	} else {
+		if t.speed >= 0.01 {
+			t.speed -= 0.01
+		}
 	}
 
 	// if keys[sdl.SCANCODE_SPACE] == 1 {
 	// 	t.shoot()
 	// }
 
-	t.Element.Update(delta)
+	t.Element.Update(t.speed, delta)
 }
 
 // Draw -
 func (t *Tank) Draw(screen *ebiten.Image) {
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(t.Element.Position.X, t.Element.Position.Y)
-
-	err := screen.DrawImage(t.Element.Sprite, op)
-	if err != nil {
-		log.Fatal(err)
-	}
+	t.Element.Draw(screen)
 }
 
 // func (t *Tank) shoot() {

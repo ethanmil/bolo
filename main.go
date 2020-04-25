@@ -58,17 +58,10 @@ func (b *Bolo) Update(screen *ebiten.Image) error {
 	// handle input
 	b.inputMap.Update()
 
-	// if b.inputMap.IsPressed(ebiten.GamepadButton0) {
-	// 	println("it's working")
-	// }
-	if ebiten.IsKeyPressed(ebiten.KeyB) {
-		println("blaahhhh")
-	}
-
 	// draw & update
 	b.world.Draw(screen)
 
-	b.tanks[0].Update(1)
+	b.tanks[0].Update(2)
 	b.tanks[0].Draw(screen)
 	return nil
 }

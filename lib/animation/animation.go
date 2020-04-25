@@ -17,14 +17,15 @@ type Element struct {
 // Draw -
 func (e *Element) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Rotate(float64(e.Angle))
 	op.GeoM.Translate(e.Position.X, e.Position.Y)
 
 	screen.DrawImage(e.Sprite, op)
 }
 
 // Update -
-func (e *Element) Update(delta float64) {
-	// movement := e.Angle.GetVector()
-	// e.Position.X += movement.X * e.Speed * delta
-	// e.Position.Y += movement.Y * e.Speed * delta
+func (e *Element) Update(speed, delta float64) {
+	movement := e.Angle.GetVector()
+	e.Position.X += movement.X * speed * delta
+	e.Position.Y += movement.Y * speed * delta
 }
