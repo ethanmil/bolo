@@ -10,6 +10,7 @@ import (
 // Element -
 type Element struct {
 	Sprite   *ebiten.Image
+	Angle    physics.Angle
 	Position physics.Vector
 }
 

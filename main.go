@@ -2,6 +2,8 @@ package main
 
 import (
 	"github.com/ethanmil/bolo/bullet"
+	"github.com/ethanmil/bolo/lib/input"
+	"github.com/ethanmil/bolo/lib/physics"
 	"github.com/ethanmil/bolo/maps"
 	"github.com/ethanmil/bolo/tank"
 	"github.com/hajimehoshi/ebiten"
@@ -35,27 +37,37 @@ func main() {
 
 // Bolo -
 type Bolo struct {
-	world   maps.WorldMap
-	tanks   []tank.Tank
-	bullets []bullet.Bullet
+	world    maps.WorldMap
+	tanks    []tank.Tank
+	bullets  []bullet.Bullet
+	inputMap input.Manager
 }
 
 // NewBolo -
 func NewBolo() *Bolo {
 	return &Bolo{
-		world:   maps.NewWorldMap("./assets/test_map.txt", 1, art),
-		tanks:   []tank.Tank{tank.NewTank(art)},
-		bullets: make([]bullet.Bullet, 50),
+		world:    maps.NewWorldMap("./assets/test_map.txt", 1, art),
+		tanks:    []tank.Tank{tank.NewTank(physics.Vector{X: 100, Y: 100}, art)},
+		bullets:  make([]bullet.Bullet, 50),
+		inputMap: input.NewManager(),
 	}
 }
 
 // Update -
 func (b *Bolo) Update(screen *ebiten.Image) error {
-	b.world.Draw(screen)
-	return nil
+	// handle input
+	b.inputMap.Update()
 
-	// b.tanks[0].Update(1)
-	// b.tanks[0].Draw(screen)
+	if b.inputMap.IsPressed(int(ebiten.Key2)) {
+		println("it's working")
+	}
+
+	// draw & update
+	b.world.Draw(screen)
+
+	b.tanks[0].Update(1)
+	b.tanks[0].Draw(screen)
+	return nil
 }
 
 // Draw -

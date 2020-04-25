@@ -3,10 +3,13 @@ package tank
 import (
 	"image"
 	"log"
+	"math"
 	"time"
 
 	"github.com/ethanmil/bolo/lib/animation"
+	"github.com/ethanmil/bolo/lib/physics"
 	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/inpututil"
 )
 
 const (
@@ -22,46 +25,36 @@ type Tank struct {
 }
 
 // NewTank -
-func NewTank(art *ebiten.Image) Tank {
+func NewTank(position physics.Vector, art *ebiten.Image) Tank {
 	return Tank{
 		Element: &animation.Element{
-			Sprite: art.SubImage(image.Rect(0, 684, 32, 716)).(*ebiten.Image),
+			Sprite:   art.SubImage(image.Rect(0, 684, 32, 716)).(*ebiten.Image),
+			Position: position,
 		},
 	}
 }
 
 // Update -
 func (t *Tank) Update(delta float64) {
-	// keys := sdl.GetKeyboardState()
-	// move := false
-	// if keys[sdl.SCANCODE_A] == 1 {
-	// 	t.element.Angle = physics.NewAngle(math.Pi)
-	// 	move = true
-	// }
-	// if keys[sdl.SCANCODE_D] == 1 {
-	// 	t.element.Angle = physics.NewAngle(0)
-	// 	move = true
-	// }
-	// if keys[sdl.SCANCODE_S] == 1 {
-	// 	t.element.Angle = physics.NewAngle(math.Pi / 2)
-	// 	move = true
-	// }
-	// if keys[sdl.SCANCODE_W] == 1 {
-	// 	t.element.Angle = physics.NewAngle(3 * math.Pi / 2)
-	// 	move = true
-	// }
-
-	// if move {
-	// 	t.element.Speed = speed
-	// } else {
-	// 	t.element.Speed = 0
-	// }
+	if inpututil.IsKeyJustPressed(ebiten.KeyA) {
+		t.Element.Angle = physics.NewAngle(math.Pi)
+		println("a hit")
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyD) {
+		t.Element.Angle = physics.NewAngle(0)
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyS) {
+		t.Element.Angle = physics.NewAngle(math.Pi / 2)
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyW) {
+		t.Element.Angle = physics.NewAngle(3 * math.Pi / 2)
+	}
 
 	// if keys[sdl.SCANCODE_SPACE] == 1 {
 	// 	t.shoot()
 	// }
 
-	// t.element.Update(delta)
+	t.Element.Update(delta)
 }
 
 // Draw -
