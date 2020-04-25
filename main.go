@@ -44,7 +44,7 @@ type Bolo struct {
 func NewBolo() *Bolo {
 	return &Bolo{
 		world:   maps.NewWorldMap("./assets/test_map.txt", 1, art),
-		tanks:   []tank.Tank{tank.NewTank()},
+		tanks:   []tank.Tank{tank.NewTank(art)},
 		bullets: make([]bullet.Bullet, 50),
 	}
 }
@@ -54,8 +54,8 @@ func (b *Bolo) Update(screen *ebiten.Image) error {
 	b.world.Draw(screen)
 	return nil
 
-	b.tanks[0].Update(1)
-	b.tanks[0].Draw(screen)
+	// b.tanks[0].Update(1)
+	// b.tanks[0].Draw(screen)
 }
 
 // Draw -

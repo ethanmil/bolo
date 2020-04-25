@@ -1,13 +1,12 @@
 package tank
 
 import (
-	"math"
+	"image"
+	"log"
 	"time"
 
-	"github.com/ethanmil/bolo/bullet"
-	"github.com/ethanmil/go-engine/animation"
-	"github.com/ethanmil/go-engine/physics"
-	"github.com/veandco/go-sdl2/sdl"
+	"github.com/ethanmil/bolo/lib/animation"
+	"github.com/hajimehoshi/ebiten"
 )
 
 const (
@@ -18,80 +17,73 @@ const (
 
 // Tank -
 type Tank struct {
-	element  *animation.Element
+	Element  *animation.Element
 	lastShot time.Time
 }
 
 // NewTank -
-func NewTank() Tank {
+func NewTank(art *ebiten.Image) Tank {
 	return Tank{
-		element: &animation.Element{
-			Sprite: animation.Sprite{
-				Size: physics.Vector{
-					X: 32,
-					Y: 32,
-				},
-				Chunk: sdl.Rect{
-					X: 0,
-					Y: 684,
-					H: 32,
-					W: 32,
-				},
-			},
-			Active: true,
-			Speed:  speed,
+		Element: &animation.Element{
+			Sprite: art.SubImage(image.Rect(0, 684, 32, 716)).(*ebiten.Image),
 		},
 	}
 }
 
 // Update -
 func (t *Tank) Update(delta float64) {
-	keys := sdl.GetKeyboardState()
-	move := false
-	if keys[sdl.SCANCODE_A] == 1 {
-		t.element.Angle = physics.NewAngle(math.Pi)
-		move = true
-	}
-	if keys[sdl.SCANCODE_D] == 1 {
-		t.element.Angle = physics.NewAngle(0)
-		move = true
-	}
-	if keys[sdl.SCANCODE_S] == 1 {
-		t.element.Angle = physics.NewAngle(math.Pi / 2)
-		move = true
-	}
-	if keys[sdl.SCANCODE_W] == 1 {
-		t.element.Angle = physics.NewAngle(3 * math.Pi / 2)
-		move = true
-	}
+	// keys := sdl.GetKeyboardState()
+	// move := false
+	// if keys[sdl.SCANCODE_A] == 1 {
+	// 	t.element.Angle = physics.NewAngle(math.Pi)
+	// 	move = true
+	// }
+	// if keys[sdl.SCANCODE_D] == 1 {
+	// 	t.element.Angle = physics.NewAngle(0)
+	// 	move = true
+	// }
+	// if keys[sdl.SCANCODE_S] == 1 {
+	// 	t.element.Angle = physics.NewAngle(math.Pi / 2)
+	// 	move = true
+	// }
+	// if keys[sdl.SCANCODE_W] == 1 {
+	// 	t.element.Angle = physics.NewAngle(3 * math.Pi / 2)
+	// 	move = true
+	// }
 
-	if move {
-		t.element.Speed = speed
-	} else {
-		t.element.Speed = 0
-	}
+	// if move {
+	// 	t.element.Speed = speed
+	// } else {
+	// 	t.element.Speed = 0
+	// }
 
-	if keys[sdl.SCANCODE_SPACE] == 1 {
-		t.shoot()
-	}
+	// if keys[sdl.SCANCODE_SPACE] == 1 {
+	// 	t.shoot()
+	// }
 
-	t.element.Update(delta)
+	// t.element.Update(delta)
 }
 
 // Draw -
-func (t *Tank) Draw(texture *sdl.Texture, renderer *sdl.Renderer) {
-	t.element.Draw(texture, renderer)
-}
+func (t *Tank) Draw(screen *ebiten.Image) {
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(t.Element.Position.X, t.Element.Position.Y)
 
-func (t *Tank) shoot() {
-	if time.Since(t.lastShot) >= bulletCooldown {
-		bullet.NewBullet(t.element.Angle, bulletSpeed, t.getGunPosition())
-		t.lastShot = time.Now()
+	err := screen.DrawImage(t.Element.Sprite, op)
+	if err != nil {
+		log.Fatal(err)
 	}
 }
 
-func (t *Tank) getGunPosition() (v physics.Vector) {
-	v.X = (t.element.Position.X + t.element.Sprite.Size.X/2) + (math.Cos(float64(t.element.Angle)) * t.element.Sprite.Size.X / 2)
-	v.Y = (t.element.Position.Y + t.element.Sprite.Size.Y/2) + (math.Sin(float64(t.element.Angle)) * t.element.Sprite.Size.Y / 2)
-	return v
-}
+// func (t *Tank) shoot() {
+// 	if time.Since(t.lastShot) >= bulletCooldown {
+// 		bullet.NewBullet(t.element.Angle, bulletSpeed, t.getGunPosition())
+// 		t.lastShot = time.Now()
+// 	}
+// }
+
+// func (t *Tank) getGunPosition() (v physics.Vector) {
+// 	v.X = (t.element.Position.X + t.element.Sprite.Size.X/2) + (math.Cos(float64(t.element.Angle)) * t.element.Sprite.Size.X / 2)
+// 	v.Y = (t.element.Position.Y + t.element.Sprite.Size.Y/2) + (math.Sin(float64(t.element.Angle)) * t.element.Sprite.Size.Y / 2)
+// 	return v
+// }

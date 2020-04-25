@@ -4,7 +4,7 @@ import (
 	"image"
 	"log"
 
-	"github.com/ethanmil/go-engine/physics"
+	"github.com/ethanmil/bolo/lib/physics"
 	"github.com/hajimehoshi/ebiten"
 )
 
