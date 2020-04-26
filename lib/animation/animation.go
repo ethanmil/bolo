@@ -16,7 +16,10 @@ type Element struct {
 
 // Draw -
 func (e *Element) Draw(screen *ebiten.Image) {
+	w, h := e.Sprite.Size()
+
 	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(-float64(w)/2, -float64(h)/2)
 	op.GeoM.Rotate(float64(e.Angle))
 	op.GeoM.Translate(e.Position.X, e.Position.Y)
 
