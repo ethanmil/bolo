@@ -1,6 +1,7 @@
 package tank
 
 import (
+	"fmt"
 	"image"
 	"math"
 	"time"
@@ -8,11 +9,11 @@ import (
 	"github.com/ethanmil/bolo/bullet"
 	"github.com/ethanmil/bolo/lib/animation"
 	"github.com/ethanmil/bolo/lib/physics"
+	"github.com/ethanmil/bolo/maps"
 	"github.com/hajimehoshi/ebiten"
 )
 
 const (
-	speed          = 0.1
 	bulletSpeed    = 0.3
 	bulletCooldown = time.Millisecond * 250
 )
@@ -23,10 +24,11 @@ type Tank struct {
 	speed         float64
 	lastShot      time.Time
 	bulletManager *bullet.Manager
+	worldMap      *maps.WorldMap
 }
 
 // NewTank -
-func NewTank(position physics.Vector, art *ebiten.Image, bulletManager *bullet.Manager) Tank {
+func NewTank(position physics.Vector, art *ebiten.Image, worldMap *maps.WorldMap, bulletManager *bullet.Manager) Tank {
 	return Tank{
 		Element: &animation.Element{
 			Sprite:   art.SubImage(image.Rect(0, 684, 32, 716)).(*ebiten.Image),
@@ -34,11 +36,15 @@ func NewTank(position physics.Vector, art *ebiten.Image, bulletManager *bullet.M
 			Angle:    physics.NewAngle(float64(0)),
 		},
 		bulletManager: bulletManager,
+		worldMap:      worldMap,
 	}
 }
 
 // Update -
 func (t *Tank) Update(delta float64) {
+	currentTile := t.worldMap.GetTileAt(t.Element.Position.X, t.Element.Position.Y)
+	println(fmt.Sprintf("current tile: %+v:", currentTile))
+
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
 		t.Element.Angle -= 0.02
 	}

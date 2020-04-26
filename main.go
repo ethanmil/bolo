@@ -36,17 +36,18 @@ func main() {
 
 // Bolo -
 type Bolo struct {
-	world         maps.WorldMap
+	world         *maps.WorldMap
 	tanks         []tank.Tank
 	bulletManager *bullet.Manager
 }
 
 // NewBolo -
 func NewBolo() *Bolo {
+	world := maps.NewWorldMap("./assets/test_map.txt", 1, art)
 	bulletManager := bullet.NewManager(art)
 	return &Bolo{
-		world:         maps.NewWorldMap("./assets/test_map.txt", 1, art),
-		tanks:         []tank.Tank{tank.NewTank(physics.Vector{X: 100, Y: 100}, art, bulletManager)},
+		world:         world,
+		tanks:         []tank.Tank{tank.NewTank(physics.Vector{X: 100, Y: 100}, art, world, bulletManager)},
 		bulletManager: bulletManager,
 	}
 }

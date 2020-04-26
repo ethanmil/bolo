@@ -11,7 +11,9 @@ import (
 // Tile -
 type Tile struct {
 	sprite   *ebiten.Image
+	typ      string
 	position physics.Vector
+	isHighlighted bool
 }
 
 // NewTile -
@@ -39,6 +41,7 @@ func NewTile(typ string, position physics.Vector, art *ebiten.Image) (t Tile) {
 		t.sprite = art.SubImage(image.Rect(0, 0, 32, 32)).(*ebiten.Image)
 	}
 
+	t.typ = typ
 	t.position = position
 
 	return t
@@ -48,8 +51,16 @@ func NewTile(typ string, position physics.Vector, art *ebiten.Image) (t Tile) {
 func (t *Tile) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(t.position.X, t.position.Y)
+	if t.isHighlighted{
+		op.
+	}
 	err := screen.DrawImage(t.sprite, op)
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+// Highlight -
+func (t *Tile) Highlight() {
+
 }
