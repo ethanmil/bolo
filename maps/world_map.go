@@ -49,7 +49,6 @@ func NewWorldMap(path string, scale float64, art *ebiten.Image) (wm WorldMap) {
 	for y := 0; y < int(worldHeight); y++ {
 		wm.tiles[y] = make([]Tile, int(worldWidth))
 		for x, tileType := range strings.Split(lines[y], ",") {
-
 			wm.tiles[y][x] = NewTile(
 				tileType,
 				physics.Vector{

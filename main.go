@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/ethanmil/bolo/bullet"
-	"github.com/ethanmil/bolo/lib/input"
 	"github.com/ethanmil/bolo/lib/physics"
 	"github.com/ethanmil/bolo/maps"
 	"github.com/ethanmil/bolo/tank"
@@ -37,32 +36,31 @@ func main() {
 
 // Bolo -
 type Bolo struct {
-	world    maps.WorldMap
-	tanks    []tank.Tank
-	bullets  []bullet.Bullet
-	inputMap input.Manager
+	world         maps.WorldMap
+	tanks         []tank.Tank
+	bulletManager *bullet.Manager
 }
 
 // NewBolo -
 func NewBolo() *Bolo {
+	bulletManager := bullet.NewManager(art)
 	return &Bolo{
-		world:    maps.NewWorldMap("./assets/test_map.txt", 1, art),
-		tanks:    []tank.Tank{tank.NewTank(physics.Vector{X: 100, Y: 100}, art)},
-		bullets:  make([]bullet.Bullet, 50),
-		inputMap: input.NewManager(),
+		world:         maps.NewWorldMap("./assets/test_map.txt", 1, art),
+		tanks:         []tank.Tank{tank.NewTank(physics.Vector{X: 100, Y: 100}, art, bulletManager)},
+		bulletManager: bulletManager,
 	}
 }
 
 // Update -
 func (b *Bolo) Update(screen *ebiten.Image) error {
-	// handle input
-	b.inputMap.Update()
-
 	// draw & update
 	b.world.Draw(screen)
 
 	b.tanks[0].Update(2)
 	b.tanks[0].Draw(screen)
+
+	b.bulletManager.Update(2)
+	b.bulletManager.Draw(screen)
 	return nil
 }
 
