@@ -76,5 +76,5 @@ func (wm *WorldMap) Draw(screen *ebiten.Image) {
 func (wm *WorldMap) GetTileAt(x, y float64) *Tile {
 	xIndex := int(x / tileSize)
 	yIndex := int(y / tileSize)
-	return &wm.tiles[xIndex][yIndex]
+	return &wm.tiles[yIndex][xIndex]
 }

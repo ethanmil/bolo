@@ -1,7 +1,6 @@
 package tank
 
 import (
-	"fmt"
 	"image"
 	"math"
 	"time"
@@ -42,8 +41,13 @@ func NewTank(position physics.Vector, art *ebiten.Image, worldMap *maps.WorldMap
 
 // Update -
 func (t *Tank) Update(delta float64) {
+	// determine acceleration/max speed based on tile
 	currentTile := t.worldMap.GetTileAt(t.Element.Position.X, t.Element.Position.Y)
-	println(fmt.Sprintf("current tile: %+v:", currentTile))
+	currentTile.Highlight()
+
+	if t.speed > currentTile.Speed {
+		t.speed -= t.speed / 50
+	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
 		t.Element.Angle -= 0.02
@@ -57,8 +61,8 @@ func (t *Tank) Update(delta float64) {
 		}
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyW) {
-		if t.speed < 1 {
-			t.speed += 0.01
+		if t.speed < currentTile.Speed {
+			t.speed += currentTile.Speed * 0.008
 		}
 	} else {
 		if t.speed >= 0.01 {
