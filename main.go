@@ -1,88 +1,75 @@
 package main
 
 import (
-	"time"
-
 	"github.com/ethanmil/bolo/bullet"
+	"github.com/ethanmil/bolo/lib/physics"
 	"github.com/ethanmil/bolo/maps"
 	"github.com/ethanmil/bolo/tank"
-	"github.com/veandco/go-sdl2/sdl"
+	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/ebitenutil"
+	"github.com/sirupsen/logrus"
 )
 
-var window *sdl.Window
-var renderer *sdl.Renderer
-var art *sdl.Texture
-var delta float64
+var art *ebiten.Image
+var err error
 
-func main() {
-	// set up the window, renderer, & main texture
-	sdlSetup()
-	// defer the destruction of window, renderer
-	defer sdl.Quit()
-	defer window.Destroy()
-	defer renderer.Destroy()
-
-	// set up the world map
-	world := maps.NewWorldMap("./assets/test_map.txt", 1)
-
-	// set up players
-	tank := tank.NewTank()
-
-	// TODO - User bullet.Manager here
-	// set up bullets
-	bullets := make([]*bullet.Bullet, 50)
-
-	// game loop
-	running := true
-	for running {
-		beginningOfFrame := time.Now()
-		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
-			switch event.(type) {
-			case *sdl.QuitEvent:
-				art.Destroy()
-				println("Quit")
-				running = false
-				break
-			}
-		}
-
-		// draw the world
-		world.Draw(art, renderer)
-
-		// draw players
-		tank.Update(delta)
-		tank.Draw(art, renderer)
-
-		// draw bullets
-		for _, bullet := range bullets {
-			if bullet != nil {
-				bullet.Update(delta)
-				bullet.Draw(art, renderer)
-			}
-		}
-
-		// present everything
-		renderer.Present()
-		delta = time.Since(beginningOfFrame).Seconds() * 1000
+func init() {
+	art, _, err = ebitenutil.NewImageFromFile("images/art.png", ebiten.FilterDefault)
+	if err != nil {
+		logrus.Fatal(err)
 	}
 }
 
-func sdlSetup() {
-	var err error
-	if err = sdl.Init(sdl.INIT_EVERYTHING); err != nil {
-		panic(err)
-	}
+var delta float64
 
-	window, err = sdl.CreateWindow("bolo", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
-		1200, 800, sdl.WINDOW_OPENGL)
+func main() {
+	bolo := NewBolo()
+
+	ebiten.SetWindowSize(800, 600)
+	ebiten.SetWindowTitle("GoBolo")
+
+	err := ebiten.RunGame(bolo)
 	if err != nil {
-		panic(err)
+		logrus.Fatal(err)
 	}
+}
 
-	renderer, err = sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
-	if err != nil {
-		panic(err)
+// Bolo -
+type Bolo struct {
+	world         maps.WorldMap
+	tanks         []tank.Tank
+	bulletManager *bullet.Manager
+}
+
+// NewBolo -
+func NewBolo() *Bolo {
+	bulletManager := bullet.NewManager(art)
+	return &Bolo{
+		world:         maps.NewWorldMap("./assets/test_map.txt", 1, art),
+		tanks:         []tank.Tank{tank.NewTank(physics.Vector{X: 100, Y: 100}, art, bulletManager)},
+		bulletManager: bulletManager,
 	}
+}
 
-	art = newTexture(renderer, "images/art.bmp")
+// Update -
+func (b *Bolo) Update(screen *ebiten.Image) error {
+	// draw & update
+	b.world.Draw(screen)
+
+	b.tanks[0].Update(2)
+	b.tanks[0].Draw(screen)
+
+	b.bulletManager.Update(2)
+	b.bulletManager.Draw(screen)
+	return nil
+}
+
+// Draw -
+func (b *Bolo) Draw(screen *ebiten.Image) error {
+	return nil
+}
+
+// Layout -
+func (b *Bolo) Layout(width, height int) (int, int) {
+	return 800, 600
 }

@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ethanmil/go-engine/physics"
-	"github.com/veandco/go-sdl2/sdl"
+	"github.com/ethanmil/bolo/lib/physics"
+	"github.com/hajimehoshi/ebiten"
 )
 
 const (
@@ -21,7 +21,8 @@ type WorldMap struct {
 }
 
 // NewWorldMap -
-func NewWorldMap(path string, scale float64) (wm WorldMap) {
+func NewWorldMap(path string, scale float64, art *ebiten.Image) (wm WorldMap) {
+	wm = WorldMap{}
 	file, err := os.Open(path)
 	if err != nil {
 		println(fmt.Sprintf("Error: %+v", err))
@@ -48,13 +49,13 @@ func NewWorldMap(path string, scale float64) (wm WorldMap) {
 	for y := 0; y < int(worldHeight); y++ {
 		wm.tiles[y] = make([]Tile, int(worldWidth))
 		for x, tileType := range strings.Split(lines[y], ",") {
-
 			wm.tiles[y][x] = NewTile(
 				tileType,
 				physics.Vector{
 					X: float64(x) * float64(tileSize) * scale,
 					Y: float64(y) * float64(tileSize) * scale,
 				},
+				art,
 			)
 		}
 	}
@@ -63,10 +64,10 @@ func NewWorldMap(path string, scale float64) (wm WorldMap) {
 }
 
 // Draw -
-func (wm *WorldMap) Draw(texture *sdl.Texture, renderer *sdl.Renderer) {
+func (wm *WorldMap) Draw(screen *ebiten.Image) {
 	for y := 0; y < int(wm.size.Y); y++ {
 		for x := 0; x < int(wm.size.X); x++ {
-			wm.tiles[y][x].Draw(texture, renderer)
+			wm.tiles[y][x].Draw(screen)
 		}
 	}
 }

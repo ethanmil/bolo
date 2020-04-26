@@ -1,50 +1,48 @@
 package bullet
 
 import (
-	"github.com/ethanmil/go-engine/animation"
-	"github.com/ethanmil/go-engine/physics"
-	"github.com/veandco/go-sdl2/sdl"
+	"image"
+	"log"
+
+	"github.com/ethanmil/bolo/lib/animation"
+	"github.com/ethanmil/bolo/lib/physics"
+	"github.com/hajimehoshi/ebiten"
+)
+
+const (
+	speed = 2
 )
 
 // Bullet -
 type Bullet struct {
-	element *animation.Element
+	Element *animation.Element
 }
 
 // NewBullet -
-func NewBullet(angle physics.Angle, speed float64, position physics.Vector) Bullet {
+func NewBullet(position physics.Vector, angle physics.Angle, art *ebiten.Image) Bullet {
 	return Bullet{
-		element: &animation.Element{
-			Sprite: animation.Sprite{
-				Size: physics.Vector{
-					X: 8,
-					Y: 6,
-				},
-				Chunk: sdl.Rect{
-					X: 16,
-					Y: 144,
-					H: 6,
-					W: 8,
-				},
-			},
-			Active:   true,
-			Angle:    angle,
-			Speed:    speed,
+		Element: &animation.Element{
+			Sprite:   art.SubImage(image.Rect(16, 144, 22, 152)).(*ebiten.Image),
 			Position: position,
+			Angle:    angle,
 		},
 	}
-
-	// bullets = append(bullets, bullet)
 }
 
 // Update -
 func (b *Bullet) Update(delta float64) {
-	movement := b.element.Angle.GetVector()
-	b.element.Position.X += movement.X * b.element.Speed * delta
-	b.element.Position.Y += movement.Y * b.element.Speed * delta
+	movement := b.Element.Angle.GetVector()
+	b.Element.Position.X += movement.X * speed * delta
+	b.Element.Position.Y += movement.Y * speed * delta
 }
 
 // Draw -
-func (b *Bullet) Draw(texture *sdl.Texture, renderer *sdl.Renderer) {
-	b.element.Draw(texture, renderer)
+func (b *Bullet) Draw(screen *ebiten.Image) {
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Rotate(float64(b.Element.Angle))
+	op.GeoM.Translate(b.Element.Position.X, b.Element.Position.Y)
+	err := screen.DrawImage(b.Element.Sprite, op)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
