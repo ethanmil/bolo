@@ -21,8 +21,8 @@ type WorldMap struct {
 }
 
 // NewWorldMap -
-func NewWorldMap(path string, scale float64, art *ebiten.Image) (wm WorldMap) {
-	wm = WorldMap{}
+func NewWorldMap(path string, scale float64, art *ebiten.Image) (wm *WorldMap) {
+	wm = &WorldMap{}
 	file, err := os.Open(path)
 	if err != nil {
 		println(fmt.Sprintf("Error: %+v", err))
@@ -70,4 +70,11 @@ func (wm *WorldMap) Draw(screen *ebiten.Image) {
 			wm.tiles[y][x].Draw(screen)
 		}
 	}
+}
+
+// GetTileAt -
+func (wm *WorldMap) GetTileAt(x, y float64) *Tile {
+	xIndex := int(x / tileSize)
+	yIndex := int(y / tileSize)
+	return &wm.tiles[yIndex][xIndex]
 }

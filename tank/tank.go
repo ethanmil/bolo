@@ -8,11 +8,11 @@ import (
 	"github.com/ethanmil/bolo/bullet"
 	"github.com/ethanmil/bolo/lib/animation"
 	"github.com/ethanmil/bolo/lib/physics"
+	"github.com/ethanmil/bolo/maps"
 	"github.com/hajimehoshi/ebiten"
 )
 
 const (
-	speed          = 0.1
 	bulletSpeed    = 0.3
 	bulletCooldown = time.Millisecond * 250
 )
@@ -23,10 +23,11 @@ type Tank struct {
 	speed         float64
 	lastShot      time.Time
 	bulletManager *bullet.Manager
+	worldMap      *maps.WorldMap
 }
 
 // NewTank -
-func NewTank(position physics.Vector, art *ebiten.Image, bulletManager *bullet.Manager) Tank {
+func NewTank(position physics.Vector, art *ebiten.Image, worldMap *maps.WorldMap, bulletManager *bullet.Manager) Tank {
 	return Tank{
 		Element: &animation.Element{
 			Sprite:   art.SubImage(image.Rect(0, 684, 32, 716)).(*ebiten.Image),
@@ -34,11 +35,20 @@ func NewTank(position physics.Vector, art *ebiten.Image, bulletManager *bullet.M
 			Angle:    physics.NewAngle(float64(0)),
 		},
 		bulletManager: bulletManager,
+		worldMap:      worldMap,
 	}
 }
 
 // Update -
 func (t *Tank) Update(delta float64) {
+	// determine acceleration/max speed based on tile
+	currentTile := t.worldMap.GetTileAt(t.Element.Position.X, t.Element.Position.Y)
+	currentTile.Highlight()
+
+	if t.speed > currentTile.Speed {
+		t.speed -= t.speed / 50
+	}
+
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
 		t.Element.Angle -= 0.02
 	}
@@ -51,8 +61,8 @@ func (t *Tank) Update(delta float64) {
 		}
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyW) {
-		if t.speed < 1 {
-			t.speed += 0.01
+		if t.speed < currentTile.Speed {
+			t.speed += currentTile.Speed * 0.008
 		}
 	} else {
 		if t.speed >= 0.01 {
