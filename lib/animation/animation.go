@@ -45,3 +45,15 @@ func (e *Element) Update(speed, delta float64, overrideVector *physics.Vector) {
 func (e *Element) Highlight() {
 	e.isHighlighted = true
 }
+
+// DoesCollide -
+func (e *Element) DoesCollide(nums ...int) bool {
+	for _, n1 := range nums {
+		for _, n2 := range e.Collision {
+			if n1 == n2 {
+				return true
+			}
+		}
+	}
+	return false
+}

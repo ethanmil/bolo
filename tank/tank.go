@@ -1,7 +1,6 @@
 package tank
 
 import (
-	"fmt"
 	"image"
 	"math"
 	"time"
@@ -67,7 +66,7 @@ func (t *Tank) handleMovement(delta float64) {
 	currentTile := t.worldMap.GetTileAt(t.Element.Position.X+16, t.Element.Position.Y+16) // TODO use width/height rather than hardcoding
 
 	// get surrounding tiles (4)
-	surroundingTiles := t.worldMap.GetTilesWithin(t.Element.Position.X, t.Element.Position.Y, t.Element.Position.X+32, t.Element.Position.Y+32)
+	// surroundingTiles := t.worldMap.GetTilesWithin(t.Element.Position.X, t.Element.Position.Y, t.Element.Position.X+32, t.Element.Position.Y+32)
 
 	if t.speed > currentTile.Speed {
 		t.speed -= t.speed / 50
@@ -87,20 +86,49 @@ func (t *Tank) handleMovement(delta float64) {
 
 	// handle collision
 	var overrideVector *physics.Vector
-	for _, tile := range surroundingTiles {
-		for _, tileCol := range tile.Element.Collision {
-			for _, tankCol := range t.Element.Collision {
-				if tileCol == tankCol {
-					// use natural angle & 0 out the proper x or y
-					v := t.Element.Angle.GetVector()
-					println(fmt.Sprintf("Tank: %+v | Tile: %+v", t.Element.Position, tile.Element.Position))
+	// for _, tile := range surroundingTiles {
+	// 	for _, tileCol := range tile.Element.Collision {
+	// 		for _, tankCol := range t.Element.Collision {
+	// 			if tileCol == tankCol {
+	// 				// use natural angle & 0 out the proper x or y
+	// 				v := t.Element.Angle.GetVector()
+	// 				println(fmt.Sprintf("Tank: %+v | Tile: %+v", t.Element.Position, tile.Element.Position))
 
-					// figure out whether the tile is in quadrant 1,2,3,4 relative to the tank,
-					// for each possibility, 0 out the X or Y respectively if the current vector would ruin us.
+	// 				// figure out whether the tile is in quadrant 1,2,3,4 relative to the tank,
+	// 				// for each possibility, 0 out the X or Y respectively if the current vector would ruin us.
 
-					overrideVector = &v
-				}
-			}
+	// 				overrideVector = &v
+	// 			}
+	// 		}
+	// 	}
+	// }
+	v := t.Element.Angle.GetVector()
+	if v.X < 0 {
+		nextXPosition := t.Element.Position.X + v.X*t.speed*delta
+		if t.worldMap.GetTileAt(nextXPosition, t.Element.Position.Y).Element.DoesCollide(t.Element.Collision...) {
+			v.X = 0
+			overrideVector = &v
+		}
+	}
+	if v.Y > 0 {
+		nextYPosition := t.Element.Position.Y + v.Y*t.speed*delta
+		if t.worldMap.GetTileAt(t.Element.Position.X, nextYPosition+32).Element.DoesCollide(t.Element.Collision...) {
+			v.Y = 0
+			overrideVector = &v
+		}
+	}
+	if v.X > 0 {
+		nextXPosition := t.Element.Position.X + v.X*t.speed*delta
+		if t.worldMap.GetTileAt(nextXPosition+32, t.Element.Position.Y /*issue here causing ability to enter walls, need to check all Y's in 32 area*/).Element.DoesCollide(t.Element.Collision...) {
+			v.X = 0
+			overrideVector = &v
+		}
+	}
+	if v.Y < 0 {
+		nextYPosition := t.Element.Position.Y + v.Y*t.speed*delta
+		if t.worldMap.GetTileAt(t.Element.Position.X, nextYPosition).Element.DoesCollide(t.Element.Collision...) {
+			v.Y = 0
+			overrideVector = &v
 		}
 	}
 
