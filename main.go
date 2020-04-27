@@ -47,7 +47,7 @@ func NewBolo() *Bolo {
 	bulletManager := bullet.NewManager(art)
 	return &Bolo{
 		world:         world,
-		tanks:         []tank.Tank{tank.NewTank(physics.Vector{X: 100, Y: 100}, art, world, bulletManager)},
+		tanks:         []tank.Tank{tank.NewTank(physics.Vector{X: 250, Y: 250}, art, world, bulletManager)},
 		bulletManager: bulletManager,
 	}
 }
