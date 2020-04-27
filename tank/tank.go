@@ -108,6 +108,9 @@ func (t *Tank) handleMovement(delta float64) {
 		if t.worldMap.GetTileAt(nextXPosition, t.Element.Position.Y).Element.DoesCollide(t.Element.Collision...) {
 			v.X = 0
 			overrideVector = &v
+		} else if t.worldMap.GetTileAt(nextXPosition, t.Element.Position.Y+32).Element.DoesCollide(t.Element.Collision...) {
+			v.X = 0
+			overrideVector = &v
 		}
 	}
 	if v.Y > 0 {
@@ -115,11 +118,17 @@ func (t *Tank) handleMovement(delta float64) {
 		if t.worldMap.GetTileAt(t.Element.Position.X, nextYPosition+32).Element.DoesCollide(t.Element.Collision...) {
 			v.Y = 0
 			overrideVector = &v
+		} else if t.worldMap.GetTileAt(t.Element.Position.X+32, nextYPosition+32).Element.DoesCollide(t.Element.Collision...) {
+			v.Y = 0
+			overrideVector = &v
 		}
 	}
 	if v.X > 0 {
 		nextXPosition := t.Element.Position.X + v.X*t.speed*delta
-		if t.worldMap.GetTileAt(nextXPosition+32, t.Element.Position.Y /*issue here causing ability to enter walls, need to check all Y's in 32 area*/).Element.DoesCollide(t.Element.Collision...) {
+		if t.worldMap.GetTileAt(nextXPosition+32, t.Element.Position.Y).Element.DoesCollide(t.Element.Collision...) {
+			v.X = 0
+			overrideVector = &v
+		} else if t.worldMap.GetTileAt(nextXPosition+32, t.Element.Position.Y+32).Element.DoesCollide(t.Element.Collision...) {
 			v.X = 0
 			overrideVector = &v
 		}
@@ -127,6 +136,9 @@ func (t *Tank) handleMovement(delta float64) {
 	if v.Y < 0 {
 		nextYPosition := t.Element.Position.Y + v.Y*t.speed*delta
 		if t.worldMap.GetTileAt(t.Element.Position.X, nextYPosition).Element.DoesCollide(t.Element.Collision...) {
+			v.Y = 0
+			overrideVector = &v
+		} else if t.worldMap.GetTileAt(t.Element.Position.X+32, nextYPosition).Element.DoesCollide(t.Element.Collision...) {
 			v.Y = 0
 			overrideVector = &v
 		}
