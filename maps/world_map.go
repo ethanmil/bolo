@@ -78,3 +78,19 @@ func (wm *WorldMap) GetTileAt(x, y float64) *Tile {
 	yIndex := int(y / tileSize)
 	return &wm.tiles[yIndex][xIndex]
 }
+
+// GetTilesWithin -
+func (wm *WorldMap) GetTilesWithin(x1, y1, x2, y2 float64) (t []Tile) {
+	tilee := *wm.GetTileAt(x1, y1)
+	tilee.Element.Highlight()
+
+	t = []Tile{tilee}
+	for x := x1 / tileSize; x <= x2/tileSize; x++ {
+		for y := y1 / tileSize; y <= y2/tileSize; y++ {
+			wm.tiles[int(y)][int(x)].Element.Highlight()
+			t = append(t, wm.tiles[int(y)][int(x)])
+		}
+	}
+
+	return t
+}

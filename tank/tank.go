@@ -1,6 +1,7 @@
 package tank
 
 import (
+	"fmt"
 	"image"
 	"math"
 	"time"
@@ -30,9 +31,10 @@ type Tank struct {
 func NewTank(position physics.Vector, art *ebiten.Image, worldMap *maps.WorldMap, bulletManager *bullet.Manager) Tank {
 	return Tank{
 		Element: &animation.Element{
-			Sprite:   art.SubImage(image.Rect(0, 684, 32, 716)).(*ebiten.Image),
-			Position: position,
-			Angle:    physics.NewAngle(float64(0)),
+			Sprite:    art.SubImage(image.Rect(0, 684, 32, 716)).(*ebiten.Image),
+			Position:  position,
+			Angle:     physics.NewAngle(float64(0)),
+			Collision: []int{1},
 		},
 		bulletManager: bulletManager,
 		worldMap:      worldMap,
@@ -41,9 +43,31 @@ func NewTank(position physics.Vector, art *ebiten.Image, worldMap *maps.WorldMap
 
 // Update -
 func (t *Tank) Update(delta float64) {
+	if ebiten.IsKeyPressed(ebiten.KeySpace) {
+		t.shoot()
+	}
+
+	t.handleMovement(delta)
+}
+
+// Draw -
+func (t *Tank) Draw(screen *ebiten.Image) {
+	t.Element.Draw(screen)
+}
+
+func (t *Tank) shoot() {
+	if time.Since(t.lastShot) >= bulletCooldown {
+		t.bulletManager.AddBullet(t.getGunPosition(), t.Element.Angle)
+		t.lastShot = time.Now()
+	}
+}
+
+func (t *Tank) handleMovement(delta float64) {
 	// determine acceleration/max speed based on tile
-	currentTile := t.worldMap.GetTileAt(t.Element.Position.X, t.Element.Position.Y)
-	currentTile.Highlight()
+	currentTile := t.worldMap.GetTileAt(t.Element.Position.X+16, t.Element.Position.Y+16) // TODO use width/height rather than hardcoding
+
+	// get surrounding tiles (4)
+	surroundingTiles := t.worldMap.GetTilesWithin(t.Element.Position.X, t.Element.Position.Y, t.Element.Position.X+32, t.Element.Position.Y+32)
 
 	if t.speed > currentTile.Speed {
 		t.speed -= t.speed / 50
@@ -60,6 +84,26 @@ func (t *Tank) Update(delta float64) {
 			t.speed -= 0.005
 		}
 	}
+
+	// handle collision
+	var overrideVector *physics.Vector
+	for _, tile := range surroundingTiles {
+		for _, tileCol := range tile.Element.Collision {
+			for _, tankCol := range t.Element.Collision {
+				if tileCol == tankCol {
+					// use natural angle & 0 out the proper x or y
+					v := t.Element.Angle.GetVector()
+					println(fmt.Sprintf("Tank: %+v | Tile: %+v", t.Element.Position, tile.Element.Position))
+
+					// figure out whether the tile is in quadrant 1,2,3,4 relative to the tank,
+					// for each possibility, 0 out the X or Y respectively if the current vector would ruin us.
+
+					overrideVector = &v
+				}
+			}
+		}
+	}
+
 	if ebiten.IsKeyPressed(ebiten.KeyW) {
 		if t.speed < currentTile.Speed {
 			t.speed += currentTile.Speed * 0.008
@@ -70,23 +114,7 @@ func (t *Tank) Update(delta float64) {
 		}
 	}
 
-	if ebiten.IsKeyPressed(ebiten.KeySpace) {
-		t.shoot()
-	}
-
-	t.Element.Update(t.speed, delta)
-}
-
-// Draw -
-func (t *Tank) Draw(screen *ebiten.Image) {
-	t.Element.Draw(screen)
-}
-
-func (t *Tank) shoot() {
-	if time.Since(t.lastShot) >= bulletCooldown {
-		t.bulletManager.AddBullet(t.getGunPosition(), t.Element.Angle)
-		t.lastShot = time.Now()
-	}
+	t.Element.Update(t.speed, delta, overrideVector)
 }
 
 func (t *Tank) getGunPosition() (v physics.Vector) {
