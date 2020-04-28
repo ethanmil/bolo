@@ -1,0 +1,59 @@
+syntax = "proto3";
+package guide;
+
+option go_package = "github.com/ethanmil/bolo/guide";
+
+message WorldInput {
+	int32 id = 1;
+}
+
+message WorldMap {
+	int32 sizeH = 1;
+	int32 sizeW = 2;
+	message Tile {
+		int32 x = 1;
+		int32 y = 2;
+		string type = 3;
+	}
+	repeated Tile tiles = 3;
+}
+
+message WorldModification {
+	int32 x = 1;
+	int32 y = 2;
+	int32 type = 3;
+	int32 health = 4;
+}
+
+message Player {
+	int32 id = 1;
+	int32 tankID = 2;
+	string name = 3;
+}
+
+message Tank {
+	int32 id = 1;
+	float x = 2;
+	float y = 3;
+}
+
+message Message {
+	int32 id = 1;
+	string writer = 2;
+	string body = 3;
+}
+
+service Bolo {
+	rpc GetPlayersOnline(WorldInput) returns (stream Player) {}
+
+	rpc GetWorldMap(WorldInput) returns (WorldMap) {}
+
+	rpc GetWorldModifications(WorldInput) returns (stream WorldModification) {}
+
+	rpc GetTanks(WorldInput) returns (stream Tank) {}
+
+	rpc SendTankData(stream Tank) returns (Tank) {}
+
+	rpc Chat(stream Message) returns (stream Message) {}
+}
+
