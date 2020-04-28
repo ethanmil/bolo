@@ -1,13 +1,18 @@
 package main
 
 import (
+	"context"
+	"log"
+
 	"github.com/ethanmil/bolo/bullet"
+	"github.com/ethanmil/bolo/guide"
 	"github.com/ethanmil/bolo/lib/physics"
 	"github.com/ethanmil/bolo/maps"
 	"github.com/ethanmil/bolo/tank"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"github.com/sirupsen/logrus"
+	"google.golang.org/grpc"
 )
 
 var art *ebiten.Image
@@ -21,6 +26,8 @@ func init() {
 }
 
 var delta float64
+
+const name = "ethan"
 
 func main() {
 	bolo := NewBolo()
@@ -39,16 +46,25 @@ type Bolo struct {
 	world         *maps.WorldMap
 	tanks         []tank.Tank
 	bulletManager *bullet.Manager
+	client        guide.BoloClient
 }
 
 // NewBolo -
 func NewBolo() *Bolo {
-	world := maps.NewWorldMap("./assets/test_map.txt", 1, art)
+	// world := maps.NewWorldMap("./assets/test_map.txt", 1, art)
 	bulletManager := bullet.NewManager(art)
+	client := connectToServer()
+
+	world, err := client.GetWorldMap(context.Background(), &guide.World{Id: 1})
+	if err != nil {
+		log.Fatalf("Failed to get world map: %v", err)
+	}
+
 	return &Bolo{
 		world:         world,
 		tanks:         []tank.Tank{tank.NewTank(physics.Vector{X: 250, Y: 250}, art, world, bulletManager)},
 		bulletManager: bulletManager,
+		client:        client,
 	}
 }
 
@@ -73,4 +89,16 @@ func (b *Bolo) Draw(screen *ebiten.Image) error {
 // Layout -
 func (b *Bolo) Layout(width, height int) (int, int) {
 	return 800, 600
+}
+
+func connectToServer() guide.BoloClient {
+	opts := []grpc.DialOption{grpc.WithInsecure()}
+	conn, err := grpc.Dial("localhost:8080", opts...)
+	if err != nil {
+		log.Fatalf("Failed to dial: %v", err)
+	}
+	defer conn.Close()
+	log.Println("Connected to server!")
+
+	return guide.NewBoloClient(conn)
 }
