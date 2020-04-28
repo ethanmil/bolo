@@ -4,11 +4,11 @@ import (
 	"context"
 	"log"
 
-	"github.com/ethanmil/bolo/bullet"
+	"github.com/ethanmil/bolo/client/bullet"
+	"github.com/ethanmil/bolo/client/maps"
+	"github.com/ethanmil/bolo/client/tank"
 	"github.com/ethanmil/bolo/guide"
 	"github.com/ethanmil/bolo/lib/physics"
-	"github.com/ethanmil/bolo/maps"
-	"github.com/ethanmil/bolo/tank"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"github.com/sirupsen/logrus"
@@ -55,7 +55,7 @@ func NewBolo() *Bolo {
 	bulletManager := bullet.NewManager(art)
 	client := connectToServer()
 
-	world, err := client.GetWorldMap(context.Background(), &guide.World{Id: 1})
+	world, err := client.GetWorldMap(context.Background(), &guide.WorldInput{Id: 1})
 	if err != nil {
 		log.Fatalf("Failed to get world map: %v", err)
 	}
