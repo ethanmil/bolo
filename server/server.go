@@ -1,22 +1,35 @@
 package main
 
 import (
-	"bufio"
-	context "context"
+	"context"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"net"
-	"os"
-	"strings"
 
-	"github.com/caarlos0/env"
 	"github.com/ethanmil/bolo/guide"
+	"github.com/ethanmil/bolo/server/util"
 	grpc "google.golang.org/grpc"
 )
 
-type config struct {
-	CertDir string `env:"BOLO_CERT_DIR"`
+func main() {
+	flag.Parse()
+	lis, err := net.Listen("tcp", ":9876")
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+
+	boloServer := NewBoloServer()
+
+	log.Println("Serving...")
+
+	srv := grpc.NewServer()
+	guide.RegisterBoloServer(srv, boloServer)
+	err = srv.Serve(lis)
+	if err != nil {
+		log.Fatalf("Error serving: %v", err)
+	}
 }
 
 var _ guide.BoloServer = &BoloServer{}
@@ -30,9 +43,8 @@ type BoloServer struct {
 
 // NewBoloServer -
 func NewBoloServer() *BoloServer {
-	wm := buildMapFromFile()
 	return &BoloServer{
-		worldMap: wm,
+		worldMap: util.BuildMapFromFile(),
 	}
 }
 
@@ -70,73 +82,17 @@ func (s *BoloServer) GetTanks(world *guide.WorldInput, stream guide.Bolo_GetTank
 
 // SendTankData -
 func (s *BoloServer) SendTankData(stream guide.Bolo_SendTankDataServer) error {
-	return nil
+	for {
+		tank, err := stream.Recv()
+		if err == io.EOF {
+			return stream.SendAndClose(tank)
+		}
+
+		println(fmt.Sprintf("tank location: %f, %f", tank.X, tank.Y))
+	}
 }
 
 // Chat -
 func (s *BoloServer) Chat(stream guide.Bolo_ChatServer) error {
 	return nil
-}
-
-func main() {
-	flag.Parse()
-	lis, err := net.Listen("tcp", ":9876")
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-
-	cfg := config{}
-	if err := env.Parse(&cfg); err != nil {
-		log.Fatalf("%+v\n", err)
-	}
-
-	log.Printf("CONFIG %+v", cfg)
-
-	s := NewBoloServer()
-
-	log.Println("Serving...")
-	// Create the TLS credentials
-	// creds, err := credentials.NewServerTLSFromFile(fmt.Sprintf("%s/server.crt", cfg.CertDir), fmt.Sprintf("%s/server.key", cfg.CertDir))
-	// if err != nil {
-	// 	log.Fatalf("could not load TLS keys: %v", err)
-	// }
-
-	// Create the gRPC server with the credentials
-	srv := grpc.NewServer( /*grpc.Creds(creds)*/ )
-	guide.RegisterBoloServer(srv, s)
-	err = srv.Serve(lis)
-	if err != nil {
-		log.Fatalf("Error serving: %v", err)
-	}
-}
-
-func buildMapFromFile() *guide.WorldMap {
-	wm := &guide.WorldMap{}
-	file, err := os.Open("assets/test_map.txt")
-	if err != nil {
-		println(fmt.Sprintf("Error: %+v", err))
-	}
-	defer file.Close()
-
-	var lines []string
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-	if err := scanner.Err(); err != nil {
-		println(fmt.Sprintf("Error: %+v", err))
-	}
-
-	wm.SizeW = int32(len(lines[0])/2 + 1)
-	wm.SizeH = int32(len(lines))
-
-	wm.Tiles = make([]string, wm.SizeH*wm.SizeW)
-	for y := 0; y < int(wm.SizeH); y++ {
-		for x, tileType := range strings.Split(lines[y], ",") {
-			seq := x + (y * int(wm.SizeH))
-			wm.Tiles[seq] = tileType
-		}
-	}
-
-	return wm
 }
