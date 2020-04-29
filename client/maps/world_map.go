@@ -28,7 +28,10 @@ func NewWorldMap(serverWM *guide.WorldMap, art *ebiten.Image) (wm *WorldMap) {
 	for y := 0; y < int(wm.size.Y); y++ {
 		wm.tiles[y] = make([]Tile, int(wm.size.X))
 		for x := 0; x < int(wm.size.X); x++ {
-			wm.tiles[y][x] = NewTile(serverWM.Tiles[x*y], art)
+			wm.tiles[y][x] = NewTile(serverWM.Tiles[x+(y*int(wm.size.Y))], physics.Vector{
+				X: float64(x * tileSize),
+				Y: float64(y * tileSize),
+			}, art)
 		}
 	}
 

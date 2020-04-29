@@ -130,14 +130,11 @@ func buildMapFromFile() *guide.WorldMap {
 	wm.SizeW = int32(len(lines[0])/2 + 1)
 	wm.SizeH = int32(len(lines))
 
-	wm.Tiles = make([]*guide.WorldMap_Tile, wm.SizeH*wm.SizeW)
+	wm.Tiles = make([]string, wm.SizeH*wm.SizeW)
 	for y := 0; y < int(wm.SizeH); y++ {
 		for x, tileType := range strings.Split(lines[y], ",") {
-			wm.Tiles[x*y] = &guide.WorldMap_Tile{
-				Type: tileType,
-				X:    int32(x * 32),
-				Y:    int32(y * 32),
-			}
+			seq := x + (y * int(wm.SizeH))
+			wm.Tiles[seq] = tileType
 		}
 	}
 

@@ -10,12 +10,7 @@ message WorldInput {
 message WorldMap {
 	int32 sizeH = 1;
 	int32 sizeW = 2;
-	message Tile {
-		int32 x = 1;
-		int32 y = 2;
-		string type = 3;
-	}
-	repeated Tile tiles = 3;
+	repeated string tiles = 3;
 }
 
 message WorldModification {
