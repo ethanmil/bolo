@@ -80,7 +80,7 @@ func (s *BoloServer) Chat(stream guide.Bolo_ChatServer) error {
 
 func main() {
 	flag.Parse()
-	lis, err := net.Listen("tcp6", ":9876")
+	lis, err := net.Listen("tcp", ":9876")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

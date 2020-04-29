@@ -53,7 +53,17 @@ type Bolo struct {
 func NewBolo() *Bolo {
 	// world := maps.NewWorldMap("./assets/test_map.txt", 1, art)
 	bulletManager := bullet.NewManager(art)
-	client := connectToServer()
+	opts := []grpc.DialOption{
+		grpc.WithInsecure(),
+	}
+	conn, err := grpc.Dial(":9876", opts...)
+	if err != nil {
+		log.Fatalf("Failed to dial: %v", err)
+	}
+	defer conn.Close()
+	log.Println("Connected to server!")
+
+	client := guide.NewBoloClient(conn)
 
 	serverWM, err := client.GetWorldMap(context.Background(), &guide.WorldInput{Id: 1})
 	if err != nil {
