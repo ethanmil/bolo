@@ -18,11 +18,13 @@ type WorldMap struct {
 
 // NewWorldMap -
 func NewWorldMap(serverWM *guide.WorldMap, art *ebiten.Image) (wm *WorldMap) {
-	wm.size = physics.Vector{
-		X: float64(serverWM.SizeW),
-		Y: float64(serverWM.SizeH),
+	wm = &WorldMap{
+		size: physics.Vector{
+			X: float64(serverWM.SizeW),
+			Y: float64(serverWM.SizeH),
+		},
+		tiles: make([][]Tile, int(serverWM.SizeH)),
 	}
-	wm.tiles = make([][]Tile, int(wm.size.Y))
 	for y := 0; y < int(wm.size.Y); y++ {
 		wm.tiles[y] = make([]Tile, int(wm.size.X))
 		for x := 0; x < int(wm.size.X); x++ {
@@ -30,7 +32,7 @@ func NewWorldMap(serverWM *guide.WorldMap, art *ebiten.Image) (wm *WorldMap) {
 		}
 	}
 
-	return wm
+	return
 }
 
 // Draw -

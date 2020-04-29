@@ -102,17 +102,3 @@ func (b *Bolo) Draw(screen *ebiten.Image) error {
 func (b *Bolo) Layout(width, height int) (int, int) {
 	return 800, 600
 }
-
-func connectToServer() guide.BoloClient {
-	opts := []grpc.DialOption{
-		grpc.WithInsecure(),
-	}
-	conn, err := grpc.Dial(":9876", opts...)
-	if err != nil {
-		log.Fatalf("Failed to dial: %v", err)
-	}
-	defer conn.Close()
-	log.Println("Connected to server!")
-
-	return guide.NewBoloClient(conn)
-}
