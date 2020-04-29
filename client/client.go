@@ -19,7 +19,7 @@ var art *ebiten.Image
 var err error
 
 func init() {
-	art, _, err = ebitenutil.NewImageFromFile("images/art.png", ebiten.FilterDefault)
+	art, _, err = ebitenutil.NewImageFromFile("client/images/art.png", ebiten.FilterDefault)
 	if err != nil {
 		logrus.Fatal(err)
 	}
@@ -55,10 +55,12 @@ func NewBolo() *Bolo {
 	bulletManager := bullet.NewManager(art)
 	client := connectToServer()
 
-	world, err := client.GetWorldMap(context.Background(), &guide.WorldInput{Id: 1})
+	serverWM, err := client.GetWorldMap(context.Background(), &guide.WorldInput{Id: 1})
 	if err != nil {
 		log.Fatalf("Failed to get world map: %v", err)
 	}
+
+	world := maps.NewWorldMap(serverWM, art)
 
 	return &Bolo{
 		world:         world,
@@ -92,8 +94,10 @@ func (b *Bolo) Layout(width, height int) (int, int) {
 }
 
 func connectToServer() guide.BoloClient {
-	opts := []grpc.DialOption{grpc.WithInsecure()}
-	conn, err := grpc.Dial("localhost:8080", opts...)
+	opts := []grpc.DialOption{
+		grpc.WithInsecure(),
+	}
+	conn, err := grpc.Dial(":9876", opts...)
 	if err != nil {
 		log.Fatalf("Failed to dial: %v", err)
 	}

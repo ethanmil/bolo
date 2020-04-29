@@ -1,11 +1,7 @@
 package maps
 
 import (
-	"bufio"
-	"fmt"
-	"os"
-	"strings"
-
+	"github.com/ethanmil/bolo/guide"
 	"github.com/ethanmil/bolo/lib/physics"
 	"github.com/hajimehoshi/ebiten"
 )
@@ -21,42 +17,16 @@ type WorldMap struct {
 }
 
 // NewWorldMap -
-func NewWorldMap(path string, scale float64, art *ebiten.Image) (wm *WorldMap) {
-	wm = &WorldMap{}
-	file, err := os.Open(path)
-	if err != nil {
-		println(fmt.Sprintf("Error: %+v", err))
-	}
-	defer file.Close()
-
-	var lines []string
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-	if err := scanner.Err(); err != nil {
-		println(fmt.Sprintf("Error: %+v", err))
-	}
-
-	worldWidth := len(lines[0])/2 + 1
-	worldHeight := len(lines)
-
+func NewWorldMap(serverWM *guide.WorldMap, art *ebiten.Image) (wm *WorldMap) {
 	wm.size = physics.Vector{
-		X: float64(worldWidth),
-		Y: float64(worldHeight),
+		X: float64(serverWM.SizeW),
+		Y: float64(serverWM.SizeH),
 	}
-	wm.tiles = make([][]Tile, int(worldHeight))
-	for y := 0; y < int(worldHeight); y++ {
-		wm.tiles[y] = make([]Tile, int(worldWidth))
-		for x, tileType := range strings.Split(lines[y], ",") {
-			wm.tiles[y][x] = NewTile(
-				tileType,
-				physics.Vector{
-					X: float64(x) * float64(tileSize) * scale,
-					Y: float64(y) * float64(tileSize) * scale,
-				},
-				art,
-			)
+	wm.tiles = make([][]Tile, int(wm.size.Y))
+	for y := 0; y < int(wm.size.Y); y++ {
+		wm.tiles[y] = make([]Tile, int(wm.size.X))
+		for x := 0; x < int(wm.size.X); x++ {
+			wm.tiles[y][x] = NewTile(serverWM.Tiles[x*y], art)
 		}
 	}
 

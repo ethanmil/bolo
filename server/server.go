@@ -10,9 +10,14 @@ import (
 	"os"
 	"strings"
 
+	"github.com/caarlos0/env"
 	"github.com/ethanmil/bolo/guide"
 	grpc "google.golang.org/grpc"
 )
+
+type config struct {
+	CertDir string `env:"BOLO_CERT_DIR"`
+}
 
 var _ guide.BoloServer = &BoloServer{}
 
@@ -25,7 +30,10 @@ type BoloServer struct {
 
 // NewBoloServer -
 func NewBoloServer() *BoloServer {
-	return &BoloServer{}
+	wm := buildMapFromFile()
+	return &BoloServer{
+		worldMap: wm,
+	}
 }
 
 // GetPlayersOnline -
@@ -41,6 +49,7 @@ func (s *BoloServer) GetPlayersOnline(world *guide.WorldInput, stream guide.Bolo
 
 // GetWorldMap -
 func (s *BoloServer) GetWorldMap(ctx context.Context, world *guide.WorldInput) (*guide.WorldMap, error) {
+	log.Println("world map requested")
 	return s.worldMap, nil
 }
 
@@ -71,20 +80,39 @@ func (s *BoloServer) Chat(stream guide.Bolo_ChatServer) error {
 
 func main() {
 	flag.Parse()
-	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", 8080))
+	lis, err := net.Listen("tcp6", ":9876")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	log.Println("Serving...")
 
-	grpcServer := grpc.NewServer()
-	guide.RegisterBoloServer(grpcServer, &BoloServer{})
-	grpcServer.Serve(lis)
+	cfg := config{}
+	if err := env.Parse(&cfg); err != nil {
+		log.Fatalf("%+v\n", err)
+	}
+
+	log.Printf("CONFIG %+v", cfg)
+
+	s := NewBoloServer()
+
+	log.Println("Serving...")
+	// Create the TLS credentials
+	// creds, err := credentials.NewServerTLSFromFile(fmt.Sprintf("%s/server.crt", cfg.CertDir), fmt.Sprintf("%s/server.key", cfg.CertDir))
+	// if err != nil {
+	// 	log.Fatalf("could not load TLS keys: %v", err)
+	// }
+
+	// Create the gRPC server with the credentials
+	srv := grpc.NewServer( /*grpc.Creds(creds)*/ )
+	guide.RegisterBoloServer(srv, s)
+	err = srv.Serve(lis)
+	if err != nil {
+		log.Fatalf("Error serving: %v", err)
+	}
 }
 
 func buildMapFromFile() *guide.WorldMap {
 	wm := &guide.WorldMap{}
-	file, err := os.Open("./assets/test_map.txt")
+	file, err := os.Open("assets/test_map.txt")
 	if err != nil {
 		println(fmt.Sprintf("Error: %+v", err))
 	}

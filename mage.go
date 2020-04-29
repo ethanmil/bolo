@@ -16,3 +16,21 @@ func Proto() error {
 
 	return magesh.RunV("protoc", args...)
 }
+
+func BoloC() error {
+	args := []string{
+		"run",
+		"client/client.go",
+	}
+
+	return magesh.RunV("go", args...)
+}
+
+func BoloS() error {
+	args := []string{
+		"run",
+		"server/server.go",
+	}
+
+	return magesh.RunV("go", args...)
+}

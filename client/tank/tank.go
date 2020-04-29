@@ -5,10 +5,10 @@ import (
 	"math"
 	"time"
 
-	"github.com/ethanmil/bolo/bullet"
+	"github.com/ethanmil/bolo/client/bullet"
+	"github.com/ethanmil/bolo/client/maps"
 	"github.com/ethanmil/bolo/lib/animation"
 	"github.com/ethanmil/bolo/lib/physics"
-	"github.com/ethanmil/bolo/maps"
 	"github.com/hajimehoshi/ebiten"
 )
 

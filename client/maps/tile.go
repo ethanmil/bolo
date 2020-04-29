@@ -3,6 +3,7 @@ package maps
 import (
 	"image"
 
+	"github.com/ethanmil/bolo/guide"
 	"github.com/ethanmil/bolo/lib/animation"
 	"github.com/ethanmil/bolo/lib/physics"
 	"github.com/hajimehoshi/ebiten"
@@ -16,8 +17,8 @@ type Tile struct {
 }
 
 // NewTile -
-func NewTile(typ string, position physics.Vector, art *ebiten.Image) (t Tile) {
-	switch typ {
+func NewTile(serverTile *guide.WorldMap_Tile, art *ebiten.Image) (t Tile) {
+	switch serverTile.Type {
 	case "0": // ocean
 		t.Element.Sprite = art.SubImage(image.Rect(0, 0, 32, 32)).(*ebiten.Image)
 		t.Speed = 0.2
@@ -48,8 +49,11 @@ func NewTile(typ string, position physics.Vector, art *ebiten.Image) (t Tile) {
 		t.Speed = 0.3
 	}
 
-	t.typ = typ
-	t.Element.Position = position
+	t.typ = serverTile.Type
+	t.Element.Position = physics.Vector{
+		X: float64(serverTile.X),
+		Y: float64(serverTile.Y),
+	}
 
 	return t
 }
