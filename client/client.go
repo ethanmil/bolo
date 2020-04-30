@@ -22,20 +22,45 @@ var art *ebiten.Image
 var delta float64
 var err error
 
+var ctx context.Context
+
 func init() {
 	art, _, err = ebitenutil.NewImageFromFile("client/images/art.png", ebiten.FilterDefault)
 	if err != nil {
 		logrus.Fatal(err)
 	}
+
+	ctx = context.Background()
 }
 
 func main() {
 	bolo := NewBolo()
 
+	// create client
+	opts := []grpc.DialOption{
+		grpc.WithInsecure(),
+	}
+	conn, err := grpc.Dial(":9876", opts...)
+	if err != nil {
+		log.Fatalf("Failed to dial: %v", err)
+	}
+	bolo.client = guide.NewBoloClient(conn)
+	defer conn.Close()
+
+	// build the world map using the tiles downloaded from the server
+	serverWM, err := bolo.client.GetWorldMap(ctx, &guide.WorldInput{Id: 1})
+	if err != nil {
+		log.Fatalf("Failed to get world map: %v", err)
+	}
+	bolo.world = maps.NewWorldMap(serverWM, art)
+
+	// create a tank
+	bolo.tanks = []tank.Tank{tank.NewTank(physics.Vector{X: 200, Y: 200}, art, bolo.world, bolo.bulletManager)}
+
 	ebiten.SetWindowSize(800, 600)
 	ebiten.SetWindowTitle("GoBolo")
 
-	err := ebiten.RunGame(bolo)
+	err = ebiten.RunGame(bolo)
 	if err != nil {
 		logrus.Fatal(err)
 	}
@@ -48,46 +73,15 @@ type Bolo struct {
 	tanks         []tank.Tank
 	bulletManager *bullet.Manager
 	client        guide.BoloClient
-	tankStreamOut guide.Bolo_SendTankDataClient
 }
 
 // NewBolo -
 func NewBolo() *Bolo {
 	bulletManager := bullet.NewManager(art)
 
-	opts := []grpc.DialOption{
-		grpc.WithInsecure(),
-	}
-	conn, err := grpc.Dial(":9876", opts...)
-	if err != nil {
-		log.Fatalf("Failed to dial: %v", err)
-	}
-	defer conn.Close()
-
-	client := guide.NewBoloClient(conn)
-
-	// build the world map using the tiles downloaded from the server
-	serverWM, err := client.GetWorldMap(context.Background(), &guide.WorldInput{Id: 1})
-	if err != nil {
-		log.Fatalf("Failed to get world map: %v", err)
-	}
-	world := maps.NewWorldMap(serverWM, art)
-
-	// create a tank
-	t := tank.NewTank(physics.Vector{X: 200, Y: 200}, art, world, bulletManager)
-
-	tankStreamOut, err := client.SendTankData(context.Background())
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	return &Bolo{
 		id:            0,
-		world:         world,
-		tanks:         []tank.Tank{t},
 		bulletManager: bulletManager,
-		client:        client,
-		tankStreamOut: tankStreamOut,
 	}
 }
 
@@ -104,7 +98,12 @@ func (b *Bolo) Update(screen *ebiten.Image) error {
 	b.bulletManager.Draw(screen)
 
 	// sync w/ server
-	err := b.tankStreamOut.Send(&guide.Tank{
+	tankStreamOut, err := b.client.SendTankData(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = tankStreamOut.Send(&guide.Tank{
 		Id: b.id,
 		X:  float32(b.tanks[b.id].Element.Position.X),
 		Y:  float32(b.tanks[b.id].Element.Position.Y),
@@ -113,9 +112,9 @@ func (b *Bolo) Update(screen *ebiten.Image) error {
 		log.Fatalf("Send: %v", err)
 	}
 
-	_, err = b.tankStreamOut.CloseAndRecv()
-	if err != nil {
-		log.Fatalf("Close and Recv: %v", err)
+	ta, err := tankStreamOut.CloseAndRecv()
+	if err != nil && err != io.EOF {
+		log.Fatalf("Close and Recv: %v | %v", err, ta)
 	}
 
 	return nil

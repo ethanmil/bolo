@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net"
+	"time"
 
 	"github.com/ethanmil/bolo/guide"
 	"github.com/ethanmil/bolo/server/util"
@@ -82,24 +83,23 @@ func (s *BoloServer) GetTanks(world *guide.WorldInput, stream guide.Bolo_GetTank
 
 // SendTankData -
 func (s *BoloServer) SendTankData(stream guide.Bolo_SendTankDataServer) error {
-	go func() {
-		for {
-			tank, err := stream.Recv()
-			if err == io.EOF {
-				stream.SendAndClose(tank)
-				break
-			}
-			if err != nil {
-				println(fmt.Sprintf("stream error: %v", err))
-			}
-
-			if tank != nil {
-				println(fmt.Sprintf("tank: %+v", tank))
-			}
+	startTime := time.Now()
+	for {
+		tank, err := stream.Recv()
+		if err == io.EOF {
+			endTime := time.Now()
+			println(endTime.Sub(startTime).Microseconds())
+			return stream.SendAndClose(&guide.Tank{X: 5})
 		}
-	}()
+		if err != nil {
+			log.Printf("error receiving: %v | %v", err, stream.Context())
+			return err
+		}
 
-	return nil
+		if tank != nil {
+			println(fmt.Sprintf("tank: %+v", tank))
+		}
+	}
 }
 
 // Chat -
