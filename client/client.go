@@ -57,6 +57,13 @@ func main() {
 	// create a tank
 	bolo.tanks = []tank.Tank{tank.NewTank(physics.Vector{X: 200, Y: 200}, art, bolo.world, bolo.bulletManager)}
 
+	// sync w/ server
+	bolo.tankStreamOut, err = bolo.client.SendTankData(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer bolo.tankStreamOut.CloseAndRecv()
+
 	ebiten.SetWindowSize(800, 600)
 	ebiten.SetWindowTitle("GoBolo")
 
@@ -73,6 +80,7 @@ type Bolo struct {
 	tanks         []tank.Tank
 	bulletManager *bullet.Manager
 	client        guide.BoloClient
+	tankStreamOut guide.Bolo_SendTankDataClient
 }
 
 // NewBolo -
@@ -97,24 +105,13 @@ func (b *Bolo) Update(screen *ebiten.Image) error {
 	b.bulletManager.Update(2)
 	b.bulletManager.Draw(screen)
 
-	// sync w/ server
-	tankStreamOut, err := b.client.SendTankData(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = tankStreamOut.Send(&guide.Tank{
+	err = b.tankStreamOut.Send(&guide.Tank{
 		Id: b.id,
 		X:  float32(b.tanks[b.id].Element.Position.X),
 		Y:  float32(b.tanks[b.id].Element.Position.Y),
 	})
 	if err != nil && err != io.EOF {
 		log.Fatalf("Send: %v", err)
-	}
-
-	ta, err := tankStreamOut.CloseAndRecv()
-	if err != nil && err != io.EOF {
-		log.Fatalf("Close and Recv: %v | %v", err, ta)
 	}
 
 	return nil
