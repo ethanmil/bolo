@@ -82,14 +82,24 @@ func (s *BoloServer) GetTanks(world *guide.WorldInput, stream guide.Bolo_GetTank
 
 // SendTankData -
 func (s *BoloServer) SendTankData(stream guide.Bolo_SendTankDataServer) error {
-	for {
-		tank, err := stream.Recv()
-		if err == io.EOF {
-			return stream.SendAndClose(tank)
-		}
+	go func() {
+		for {
+			tank, err := stream.Recv()
+			if err == io.EOF {
+				stream.SendAndClose(tank)
+				break
+			}
+			if err != nil {
+				println(fmt.Sprintf("stream error: %v", err))
+			}
 
-		println(fmt.Sprintf("tank location: %f, %f", tank.X, tank.Y))
-	}
+			if tank != nil {
+				println(fmt.Sprintf("tank: %+v", tank))
+			}
+		}
+	}()
+
+	return nil
 }
 
 // Chat -

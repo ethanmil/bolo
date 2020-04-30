@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"io"
 	"log"
 
 	"github.com/ethanmil/bolo/client/bullet"
@@ -47,6 +48,7 @@ type Bolo struct {
 	tanks         []tank.Tank
 	bulletManager *bullet.Manager
 	client        guide.BoloClient
+	tankStreamOut guide.Bolo_SendTankDataClient
 }
 
 // NewBolo -
@@ -74,11 +76,18 @@ func NewBolo() *Bolo {
 	// create a tank
 	t := tank.NewTank(physics.Vector{X: 200, Y: 200}, art, world, bulletManager)
 
+	tankStreamOut, err := client.SendTankData(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	return &Bolo{
+		id:            0,
 		world:         world,
 		tanks:         []tank.Tank{t},
 		bulletManager: bulletManager,
 		client:        client,
+		tankStreamOut: tankStreamOut,
 	}
 }
 
@@ -95,15 +104,19 @@ func (b *Bolo) Update(screen *ebiten.Image) error {
 	b.bulletManager.Draw(screen)
 
 	// sync w/ server
-	stream, err := b.client.SendTankData(context.Background())
-	if err != nil {
-		log.Fatal(err)
-	}
-	stream.Send(&guide.Tank{
+	err := b.tankStreamOut.Send(&guide.Tank{
 		Id: b.id,
 		X:  float32(b.tanks[b.id].Element.Position.X),
 		Y:  float32(b.tanks[b.id].Element.Position.Y),
 	})
+	if err != nil && err != io.EOF {
+		log.Fatalf("Send: %v", err)
+	}
+
+	_, err = b.tankStreamOut.CloseAndRecv()
+	if err != nil {
+		log.Fatalf("Close and Recv: %v", err)
+	}
 
 	return nil
 }
