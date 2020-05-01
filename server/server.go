@@ -112,6 +112,52 @@ func (s *BoloServer) SendTankData(stream guide.Bolo_SendTankDataServer) error {
 	}
 }
 
+// GetBullets -
+func (s *BoloServer) GetBullets(world *guide.WorldInput, stream guide.Bolo_GetTanksServer) error {
+	if s.tanks != nil {
+		for _, tank := range s.tanks {
+			if tank != nil {
+				if err := stream.Send(tank); err != nil {
+					log.Fatalf("Failed to send tank data: %v", err)
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+
+// SendTankData -
+func (s *BoloServer) SendTankData(stream guide.Bolo_SendTankDataServer) error {
+	startTime := time.Now()
+	for {
+		tank, err := stream.Recv()
+		if err == io.EOF {
+			endTime := time.Now()
+			println(int(endTime.Sub(startTime).Seconds()))
+			return stream.SendAndClose(tank)
+		}
+		if err != nil {
+			log.Printf("error receiving: %v | %v", err, stream.Context())
+			return err
+		}
+
+		if tank != nil {
+			found := false
+			for i := range s.tanks {
+				if s.tanks[i].Id == tank.Id {
+					found = true
+					s.tanks[i] = tank
+					break
+				}
+			}
+			if !found {
+				s.tanks = append(s.tanks, tank)
+			}
+		}
+	}
+}
+
 // Chat -
 func (s *BoloServer) Chat(stream guide.Bolo_ChatServer) error {
 	return nil

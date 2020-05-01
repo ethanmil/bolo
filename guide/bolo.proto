@@ -28,6 +28,12 @@ message Tank {
 	string name = 5;
 }
 
+message Bullet {
+	float x = 1;
+	float y = 2;
+	float angle = 3;
+}
+
 message Message {
 	int32 id = 1;
 	string writer = 2;
@@ -44,6 +50,10 @@ service Bolo {
 	rpc GetTanks(WorldInput) returns (stream Tank) {}
 
 	rpc SendTankData(stream Tank) returns (Tank) {}
+
+	rpc GetBullets(WorldInput) returns (stream Bullet) {}
+
+	rpc ShootBullet(stream Bullet) returns (Bullet) {}
 
 	rpc Chat(stream Message) returns (stream Message) {}
 }
