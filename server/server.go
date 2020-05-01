@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"io"
 	"log"
 	"net"
@@ -46,6 +45,7 @@ type BoloServer struct {
 func NewBoloServer() *BoloServer {
 	return &BoloServer{
 		worldMap: util.BuildMapFromFile(),
+		tanks:    make([]*guide.Tank, 8),
 	}
 }
 
@@ -74,8 +74,10 @@ func (s *BoloServer) GetWorldModifications(world *guide.WorldInput, stream guide
 // GetTanks -
 func (s *BoloServer) GetTanks(world *guide.WorldInput, stream guide.Bolo_GetTanksServer) error {
 	for _, tank := range s.tanks {
-		if err := stream.Send(tank); err != nil {
-			return err
+		if tank != nil {
+			if err := stream.Send(tank); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -88,8 +90,8 @@ func (s *BoloServer) SendTankData(stream guide.Bolo_SendTankDataServer) error {
 		tank, err := stream.Recv()
 		if err == io.EOF {
 			endTime := time.Now()
-			println(endTime.Sub(startTime).Microseconds())
-			return stream.SendAndClose(&guide.Tank{X: 5})
+			println(endTime.Sub(startTime).Seconds())
+			return stream.SendAndClose(tank)
 		}
 		if err != nil {
 			log.Printf("error receiving: %v | %v", err, stream.Context())
@@ -97,7 +99,7 @@ func (s *BoloServer) SendTankData(stream guide.Bolo_SendTankDataServer) error {
 		}
 
 		if tank != nil {
-			println(fmt.Sprintf("tank: %+v", tank))
+			s.tanks[tank.Id] = tank
 		}
 	}
 }

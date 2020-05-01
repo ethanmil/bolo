@@ -40,6 +40,18 @@ func NewTank(position physics.Vector, art *ebiten.Image, worldMap *maps.WorldMap
 	}
 }
 
+// NewOtherTank -
+func NewOtherTank(position physics.Vector, art *ebiten.Image) Tank {
+	return Tank{
+		Element: &animation.Element{
+			Sprite:    art.SubImage(image.Rect(0, 684, 32, 716)).(*ebiten.Image),
+			Position:  position,
+			Angle:     physics.NewAngle(float64(0)),
+			Collision: []int{1},
+		},
+	}
+}
+
 // Update -
 func (t *Tank) Update(delta float64) {
 	if ebiten.IsKeyPressed(ebiten.KeySpace) {

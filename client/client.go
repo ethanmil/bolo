@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"io"
 	"log"
 
 	"github.com/ethanmil/bolo/client/bologame"
@@ -34,9 +35,10 @@ func init() {
 }
 
 func main() {
-	bolo := bologame.New(0, art, bullet.NewManager(art))
+	// create game object
+	bolo := bologame.New(1, art, bullet.NewManager(art))
 
-	// create client
+	// connect client
 	opts := []grpc.DialOption{
 		grpc.WithInsecure(),
 	}
@@ -44,26 +46,51 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to dial: %v", err)
 	}
-	bolo.client = guide.NewBoloClient(conn)
+	bolo.Client = guide.NewBoloClient(conn)
 	defer conn.Close()
 
 	// build the world map using the tiles downloaded from the server
-	serverWM, err := bolo.client.GetWorldMap(ctx, &guide.WorldInput{Id: 1})
+	serverWM, err := bolo.Client.GetWorldMap(ctx, &guide.WorldInput{Id: 1})
 	if err != nil {
 		log.Fatalf("Failed to get world map: %v", err)
 	}
-	bolo.world = maps.NewWorldMap(serverWM, art)
+	bolo.World = maps.NewWorldMap(serverWM, art)
 
-	// create a tank
-	bolo.tanks = []tank.Tank{tank.NewTank(physics.Vector{X: 200, Y: 200}, art, bolo.world, bolo.bulletManager)}
+	// create our player's tank
+	bolo.Tanks[bolo.ID] = tank.NewTank(physics.Vector{X: 200, Y: 200}, art, bolo.World, bolo.BulletManager)
 
-	// sync w/ server
-	bolo.tankStreamOut, err = bolo.client.SendTankData(ctx)
+	// set up our server streams
+
+	// send our tank's data
+	bolo.TankStreamOut, err = bolo.Client.SendTankData(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer bolo.tankStreamOut.CloseAndRecv()
+	defer bolo.TankStreamOut.CloseAndRecv()
 
+	// receive all tank's data
+	bolo.TankStreamIn, err = bolo.Client.GetTanks(ctx, &guide.WorldInput{Id: bolo.ID})
+	go func() {
+		for {
+			t, err := bolo.TankStreamIn.Recv()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				log.Fatalf("Failed to receive tank stream in: %v", err)
+			}
+
+			if t != nil {
+				bolo.Tanks[t.Id] = tank.NewOtherTank(physics.Vector{
+					X: float64(t.X),
+					Y: float64(t.Y),
+				}, art)
+				println("tanks are loading", t.Id)
+			}
+		}
+	}()
+
+	// run our ebiten game
 	ebiten.SetWindowSize(800, 600)
 	ebiten.SetWindowTitle("GoBolo")
 
