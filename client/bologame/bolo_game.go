@@ -78,7 +78,6 @@ func (b *Bolo) Layout(width, height int) (int, int) {
 
 // ConnectToServer -
 func (b *Bolo) ConnectToServer() *grpc.ClientConn {
-	// connect client
 	opts := []grpc.DialOption{
 		grpc.WithInsecure(),
 	}
