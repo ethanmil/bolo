@@ -50,7 +50,9 @@ func NewBoloServer() *BoloServer {
 
 // RegisterPlayer -
 func (s *BoloServer) RegisterPlayer(ctx context.Context, player *guide.Player) (*guide.Player, error) {
+	player.Id = int32(len(s.players) + 1)
 	s.players = append(s.players, player)
+	log.Printf("PLAYER: %v", s.players)
 	return player, nil
 }
 
@@ -77,10 +79,14 @@ func (s *BoloServer) GetWorldModifications(world *guide.WorldInput, stream guide
 
 // GetTanks -
 func (s *BoloServer) GetTanks(world *guide.WorldInput, stream guide.Bolo_GetTanksServer) error {
-	for _, tank := range s.tanks {
-		if tank != nil {
-			if err := stream.Send(tank); err != nil {
-				return err
+	log.Println("get tanks called")
+	if s.tanks != nil {
+		for _, tank := range s.tanks {
+			if tank != nil {
+				if err := stream.Send(tank); err != nil {
+					return err
+				}
+				log.Printf("Tanks from server: %v", tank)
 			}
 		}
 	}
@@ -103,7 +109,17 @@ func (s *BoloServer) SendTankData(stream guide.Bolo_SendTankDataServer) error {
 		}
 
 		if tank != nil {
-			s.tanks = append(s.tanks, tank)
+			found := false
+			for i := range s.tanks {
+				if s.tanks[i].Id == tank.Id {
+					found = true
+					s.tanks[i] = tank
+					break
+				}
+			}
+			if !found {
+				s.tanks = append(s.tanks, tank)
+			}
 		}
 	}
 }

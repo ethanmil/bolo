@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"time"
 
 	"github.com/ethanmil/bolo/client/bologame"
 	"github.com/ethanmil/bolo/client/bullet"
@@ -57,7 +58,7 @@ func main() {
 	}
 	println(players)
 
-	// register ourselves
+	// register ourself
 	player, err := bolo.Client.RegisterPlayer(ctx, &guide.Player{
 		Name: "ethan",
 	})
@@ -65,6 +66,7 @@ func main() {
 		log.Fatalf("Failed to register player: %v", err)
 	}
 	println(fmt.Sprintf("PLAYER: %+v", player))
+	bolo.ID = player.Id
 
 	// build the world map using the tiles downloaded from the server
 	serverWM, err := bolo.Client.GetWorldMap(ctx, &guide.WorldInput{Id: 1})
@@ -74,7 +76,7 @@ func main() {
 	bolo.World = maps.NewWorldMap(serverWM, art)
 
 	// create our player's tank
-	bolo.Tanks[bolo.ID] = tank.NewTank(physics.Vector{X: 200, Y: 200}, art, bolo.World, bolo.BulletManager)
+	bolo.Tanks = append(bolo.Tanks, tank.NewTank(player.Id, physics.Vector{X: 200, Y: 200}, art, bolo.World, bolo.BulletManager))
 
 	// set up our server streams
 
@@ -85,24 +87,31 @@ func main() {
 	}
 	defer bolo.TankStreamOut.CloseAndRecv()
 
-	// receive all tank's data
-	bolo.TankStreamIn, err = bolo.Client.GetTanks(ctx, &guide.WorldInput{Id: bolo.ID})
+	// always check for more tank data
 	go func() {
 		for {
-			t, err := bolo.TankStreamIn.Recv()
-			if err == io.EOF {
-				break
-			}
+			bolo.TankStreamIn, err = bolo.Client.GetTanks(context.Background(), &guide.WorldInput{Id: 1})
 			if err != nil {
+				log.Fatal(err)
+			}
+			defer bolo.TankStreamIn.CloseSend()
+			t, err := bolo.TankStreamIn.Recv()
+			if err != nil && err != io.EOF {
 				log.Fatalf("Failed to receive tank stream in: %v", err)
 			}
 
-			if t != nil {
-				bolo.Tanks[t.Id] = tank.NewOtherTank(physics.Vector{
-					X: float64(t.X),
-					Y: float64(t.Y),
-				}, art)
-				println("tanks are loading", t.Id)
+			if t != nil && t.Id != bolo.ID {
+				found := false
+				for i := range bolo.Tanks {
+					if bolo.Tanks[i].ID == t.Id {
+						found = true
+						bolo.Tanks[i].Element.Position = physics.NewVector(float64(t.X), float64(t.Y))
+						break
+					}
+				}
+				if !found {
+					bolo.Tanks = append(bolo.Tanks, tank.NewOtherTank(t.Id, physics.NewVector(float64(t.X), float64(t.Y)), bolo.Art))
+				}
 			}
 		}
 	}()
@@ -110,6 +119,9 @@ func main() {
 	// run our ebiten game
 	ebiten.SetWindowSize(800, 600)
 	ebiten.SetWindowTitle("GoBolo")
+	ebiten.SetRunnableOnUnfocused(true)
+
+	time.Sleep(500)
 
 	err = ebiten.RunGame(bolo)
 	if err != nil {

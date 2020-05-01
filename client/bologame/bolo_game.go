@@ -11,8 +11,6 @@ import (
 	"github.com/hajimehoshi/ebiten"
 )
 
-var art *ebiten.Image
-var delta float64
 var err error
 
 // Bolo -
@@ -31,7 +29,7 @@ type Bolo struct {
 func New(art *ebiten.Image, bulletManager *bullet.Manager) *Bolo {
 	return &Bolo{
 		Art:           art,
-		Tanks:         make([]tank.Tank, 8),
+		Tanks:         []tank.Tank{},
 		BulletManager: bulletManager,
 	}
 }
@@ -41,12 +39,11 @@ func (b *Bolo) Update(screen *ebiten.Image) error {
 	b.World.Draw(screen)
 
 	for i := range b.Tanks {
-		if b.Tanks[i] != (tank.Tank{}) {
-			if i == int(b.ID) {
-				b.Tanks[i].Update(2)
-			}
-			b.Tanks[i].Draw(screen)
+		if b.Tanks[i].ID == b.ID {
+			b.Tanks[i].Update(2)
 		}
+		b.Tanks[i].Draw(screen)
+		// log.Printf("TANKS: %v", b.Tanks)
 	}
 
 	b.BulletManager.Update(2)
@@ -55,12 +52,14 @@ func (b *Bolo) Update(screen *ebiten.Image) error {
 	// sync tank to server
 	err = b.TankStreamOut.Send(&guide.Tank{
 		Id: b.ID,
-		X:  float32(b.Tanks[b.ID].Element.Position.X),
-		Y:  float32(b.Tanks[b.ID].Element.Position.Y),
+		X:  float32(b.Tanks[0].Element.Position.X),
+		Y:  float32(b.Tanks[0].Element.Position.Y),
 	})
 	if err != nil && err != io.EOF {
 		log.Fatalf("Send: %v", err)
 	}
+
+	// testing
 
 	return nil
 }

@@ -19,6 +19,7 @@ const (
 
 // Tank -
 type Tank struct {
+	ID            int32
 	Element       *animation.Element
 	speed         float64
 	lastShot      time.Time
@@ -27,8 +28,9 @@ type Tank struct {
 }
 
 // NewTank -
-func NewTank(position physics.Vector, art *ebiten.Image, worldMap *maps.WorldMap, bulletManager *bullet.Manager) Tank {
+func NewTank(id int32, position physics.Vector, art *ebiten.Image, worldMap *maps.WorldMap, bulletManager *bullet.Manager) Tank {
 	return Tank{
+		ID: id,
 		Element: &animation.Element{
 			Sprite:    art.SubImage(image.Rect(0, 684, 32, 716)).(*ebiten.Image),
 			Position:  position,
@@ -41,8 +43,9 @@ func NewTank(position physics.Vector, art *ebiten.Image, worldMap *maps.WorldMap
 }
 
 // NewOtherTank -
-func NewOtherTank(position physics.Vector, art *ebiten.Image) Tank {
+func NewOtherTank(id int32, position physics.Vector, art *ebiten.Image) Tank {
 	return Tank{
+		ID: id,
 		Element: &animation.Element{
 			Sprite:    art.SubImage(image.Rect(0, 684, 32, 716)).(*ebiten.Image),
 			Position:  position,
