@@ -1,6 +1,8 @@
 package bologame
 
 import (
+	"context"
+	"fmt"
 	"io"
 	"log"
 
@@ -8,7 +10,9 @@ import (
 	"github.com/ethanmil/bolo/client/maps"
 	"github.com/ethanmil/bolo/client/tank"
 	"github.com/ethanmil/bolo/guide"
+	"github.com/ethanmil/bolo/lib/physics"
 	"github.com/hajimehoshi/ebiten"
+	"google.golang.org/grpc"
 )
 
 var err error
@@ -43,7 +47,6 @@ func (b *Bolo) Update(screen *ebiten.Image) error {
 			b.Tanks[i].Update(2)
 		}
 		b.Tanks[i].Draw(screen)
-		// log.Printf("TANKS: %v", b.Tanks)
 	}
 
 	b.BulletManager.Update(2)
@@ -60,8 +63,6 @@ func (b *Bolo) Update(screen *ebiten.Image) error {
 		log.Fatalf("Send: %v", err)
 	}
 
-	// testing
-
 	return nil
 }
 
@@ -73,4 +74,65 @@ func (b *Bolo) Draw(screen *ebiten.Image) error {
 // Layout -
 func (b *Bolo) Layout(width, height int) (int, int) {
 	return 800, 600
+}
+
+// ConnectToServer -
+func (b *Bolo) ConnectToServer() *grpc.ClientConn {
+	// connect client
+	opts := []grpc.DialOption{
+		grpc.WithInsecure(),
+	}
+	conn, err := grpc.Dial(":9876", opts...)
+	if err != nil {
+		log.Fatalf("Failed to dial: %v", err)
+	}
+	b.Client = guide.NewBoloClient(conn)
+	return conn
+}
+
+// RegisterTank -
+func (b *Bolo) RegisterTank(ctx context.Context) {
+	t, err := b.Client.RegisterTank(ctx, &guide.Tank{
+		Name: "ethan",
+	})
+	if err != nil {
+		log.Fatalf("Failed to register player: %v", err)
+	}
+	println(fmt.Sprintf("Tank: %+v", t))
+	b.ID = t.Id
+}
+
+// SyncTankData -
+func (b *Bolo) SyncTankData(ctx context.Context) {
+	for {
+		b.TankStreamIn, err = b.Client.GetTanks(ctx, &guide.WorldInput{Id: 1})
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer b.TankStreamIn.CloseSend()
+		for {
+			t, err := b.TankStreamIn.Recv()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				log.Fatalf("Failed to receive tank stream in: %v", err)
+			}
+
+			if t != nil && t.Id != b.ID {
+				found := false
+				for i := range b.Tanks {
+					if b.Tanks[i].ID == t.Id {
+						found = true
+						b.Tanks[i].Element.Position = physics.NewVector(float64(t.X), float64(t.Y))
+						b.Tanks[i].Element.Angle = physics.NewAngle(float64(t.Angle))
+						break
+					}
+				}
+				if !found {
+					b.Tanks = append(b.Tanks, tank.NewOtherTank(t.Id, physics.NewVector(float64(t.X), float64(t.Y)), b.Art))
+				}
+			}
+		}
+	}
 }

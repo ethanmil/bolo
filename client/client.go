@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"io"
 	"log"
 	"time"
 
@@ -16,7 +14,6 @@ import (
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"github.com/sirupsen/logrus"
-	"google.golang.org/grpc"
 )
 
 const name = "ethan"
@@ -41,25 +38,10 @@ func main() {
 	bolo := bologame.New(art, bullet.NewManager(art))
 
 	// connect client
-	opts := []grpc.DialOption{
-		grpc.WithInsecure(),
-	}
-	conn, err := grpc.Dial(":9876", opts...)
-	if err != nil {
-		log.Fatalf("Failed to dial: %v", err)
-	}
-	bolo.Client = guide.NewBoloClient(conn)
+	conn := bolo.ConnectToServer()
 	defer conn.Close()
 
-	// register ourself
-	t, err := bolo.Client.RegisterTank(ctx, &guide.Tank{
-		Name: "ethan",
-	})
-	if err != nil {
-		log.Fatalf("Failed to register player: %v", err)
-	}
-	println(fmt.Sprintf("Tank: %+v", t))
-	bolo.ID = t.Id
+	bolo.RegisterTank(ctx)
 
 	// build the world map using the tiles downloaded from the server
 	serverWM, err := bolo.Client.GetWorldMap(ctx, &guide.WorldInput{Id: 1})
@@ -69,7 +51,7 @@ func main() {
 	bolo.World = maps.NewWorldMap(serverWM, art)
 
 	// create our player's tank
-	bolo.Tanks = append(bolo.Tanks, tank.NewTank(t.Id, physics.Vector{X: 200, Y: 200}, art, bolo.World, bolo.BulletManager))
+	bolo.Tanks = append(bolo.Tanks, tank.NewTank(bolo.ID, physics.Vector{X: 200, Y: 200}, art, bolo.World, bolo.BulletManager))
 
 	// set up our server streams
 
@@ -82,37 +64,7 @@ func main() {
 
 	// always check for more tank data
 	go func() {
-		for {
-			bolo.TankStreamIn, err = bolo.Client.GetTanks(context.Background(), &guide.WorldInput{Id: 1})
-			if err != nil {
-				log.Fatal(err)
-			}
-			defer bolo.TankStreamIn.CloseSend()
-			for {
-				t, err := bolo.TankStreamIn.Recv()
-				if err == io.EOF {
-					break
-				}
-				if err != nil {
-					log.Fatalf("Failed to receive tank stream in: %v", err)
-				}
-
-				if t != nil && t.Id != bolo.ID {
-					found := false
-					for i := range bolo.Tanks {
-						if bolo.Tanks[i].ID == t.Id {
-							found = true
-							bolo.Tanks[i].Element.Position = physics.NewVector(float64(t.X), float64(t.Y))
-							bolo.Tanks[i].Element.Angle = physics.NewAngle(float64(t.Angle))
-							break
-						}
-					}
-					if !found {
-						bolo.Tanks = append(bolo.Tanks, tank.NewOtherTank(t.Id, physics.NewVector(float64(t.X), float64(t.Y)), bolo.Art))
-					}
-				}
-			}
-		}
+		bolo.SyncTankData(ctx)
 	}()
 
 	// run our ebiten game
