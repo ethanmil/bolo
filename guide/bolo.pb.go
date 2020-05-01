@@ -210,116 +210,6 @@ func (x *WorldModification) GetHealth() int32 {
 	return 0
 }
 
-type PlayerInput struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-}
-
-func (x *PlayerInput) Reset() {
-	*x = PlayerInput{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_guide_bolo_proto_msgTypes[3]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *PlayerInput) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*PlayerInput) ProtoMessage() {}
-
-func (x *PlayerInput) ProtoReflect() protoreflect.Message {
-	mi := &file_guide_bolo_proto_msgTypes[3]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use PlayerInput.ProtoReflect.Descriptor instead.
-func (*PlayerInput) Descriptor() ([]byte, []int) {
-	return file_guide_bolo_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *PlayerInput) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-type Player struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Id     int32  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	TankID int32  `protobuf:"varint,2,opt,name=tankID,proto3" json:"tankID,omitempty"`
-	Name   string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-}
-
-func (x *Player) Reset() {
-	*x = Player{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_guide_bolo_proto_msgTypes[4]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *Player) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Player) ProtoMessage() {}
-
-func (x *Player) ProtoReflect() protoreflect.Message {
-	mi := &file_guide_bolo_proto_msgTypes[4]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Player.ProtoReflect.Descriptor instead.
-func (*Player) Descriptor() ([]byte, []int) {
-	return file_guide_bolo_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *Player) GetId() int32 {
-	if x != nil {
-		return x.Id
-	}
-	return 0
-}
-
-func (x *Player) GetTankID() int32 {
-	if x != nil {
-		return x.TankID
-	}
-	return 0
-}
-
-func (x *Player) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
 type Tank struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -329,12 +219,13 @@ type Tank struct {
 	X     float32 `protobuf:"fixed32,2,opt,name=x,proto3" json:"x,omitempty"`
 	Y     float32 `protobuf:"fixed32,3,opt,name=y,proto3" json:"y,omitempty"`
 	Angle float32 `protobuf:"fixed32,4,opt,name=angle,proto3" json:"angle,omitempty"`
+	Name  string  `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
 }
 
 func (x *Tank) Reset() {
 	*x = Tank{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_guide_bolo_proto_msgTypes[5]
+		mi := &file_guide_bolo_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -347,7 +238,7 @@ func (x *Tank) String() string {
 func (*Tank) ProtoMessage() {}
 
 func (x *Tank) ProtoReflect() protoreflect.Message {
-	mi := &file_guide_bolo_proto_msgTypes[5]
+	mi := &file_guide_bolo_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -360,7 +251,7 @@ func (x *Tank) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Tank.ProtoReflect.Descriptor instead.
 func (*Tank) Descriptor() ([]byte, []int) {
-	return file_guide_bolo_proto_rawDescGZIP(), []int{5}
+	return file_guide_bolo_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Tank) GetId() int32 {
@@ -391,6 +282,13 @@ func (x *Tank) GetAngle() float32 {
 	return 0
 }
 
+func (x *Tank) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
 type Message struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -404,7 +302,7 @@ type Message struct {
 func (x *Message) Reset() {
 	*x = Message{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_guide_bolo_proto_msgTypes[6]
+		mi := &file_guide_bolo_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -417,7 +315,7 @@ func (x *Message) String() string {
 func (*Message) ProtoMessage() {}
 
 func (x *Message) ProtoReflect() protoreflect.Message {
-	mi := &file_guide_bolo_proto_msgTypes[6]
+	mi := &file_guide_bolo_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -430,7 +328,7 @@ func (x *Message) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Message.ProtoReflect.Descriptor instead.
 func (*Message) Descriptor() ([]byte, []int) {
-	return file_guide_bolo_proto_rawDescGZIP(), []int{6}
+	return file_guide_bolo_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *Message) GetId() int32 {
@@ -471,49 +369,40 @@ var file_guide_bolo_proto_rawDesc = []byte{
 	0x01, 0x28, 0x05, 0x52, 0x01, 0x79, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x03,
 	0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x68, 0x65,
 	0x61, 0x6c, 0x74, 0x68, 0x18, 0x04, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x68, 0x65, 0x61, 0x6c,
-	0x74, 0x68, 0x22, 0x21, 0x0a, 0x0b, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x6e, 0x70, 0x75,
-	0x74, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x44, 0x0a, 0x06, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x12,
-	0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x02, 0x69, 0x64, 0x12,
-	0x16, 0x0a, 0x06, 0x74, 0x61, 0x6e, 0x6b, 0x49, 0x44, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52,
-	0x06, 0x74, 0x61, 0x6e, 0x6b, 0x49, 0x44, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18,
-	0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x48, 0x0a, 0x04, 0x54,
-	0x61, 0x6e, 0x6b, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52,
-	0x02, 0x69, 0x64, 0x12, 0x0c, 0x0a, 0x01, 0x78, 0x18, 0x02, 0x20, 0x01, 0x28, 0x02, 0x52, 0x01,
-	0x78, 0x12, 0x0c, 0x0a, 0x01, 0x79, 0x18, 0x03, 0x20, 0x01, 0x28, 0x02, 0x52, 0x01, 0x79, 0x12,
-	0x14, 0x0a, 0x05, 0x61, 0x6e, 0x67, 0x6c, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x02, 0x52, 0x05,
-	0x61, 0x6e, 0x67, 0x6c, 0x65, 0x22, 0x45, 0x0a, 0x07, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65,
-	0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x02, 0x69, 0x64,
-	0x12, 0x16, 0x0a, 0x06, 0x77, 0x72, 0x69, 0x74, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x06, 0x77, 0x72, 0x69, 0x74, 0x65, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x62, 0x6f, 0x64, 0x79,
-	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x62, 0x6f, 0x64, 0x79, 0x32, 0xfd, 0x02, 0x0a,
-	0x04, 0x42, 0x6f, 0x6c, 0x6f, 0x12, 0x30, 0x0a, 0x0e, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65,
-	0x72, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x12, 0x0d, 0x2e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x2e,
-	0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x1a, 0x0d, 0x2e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x2e, 0x50,
-	0x6c, 0x61, 0x79, 0x65, 0x72, 0x22, 0x00, 0x12, 0x38, 0x0a, 0x10, 0x47, 0x65, 0x74, 0x50, 0x6c,
-	0x61, 0x79, 0x65, 0x72, 0x73, 0x4f, 0x6e, 0x6c, 0x69, 0x6e, 0x65, 0x12, 0x11, 0x2e, 0x67, 0x75,
-	0x69, 0x64, 0x65, 0x2e, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x1a, 0x0d,
-	0x2e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x2e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x22, 0x00, 0x30,
-	0x01, 0x12, 0x33, 0x0a, 0x0b, 0x47, 0x65, 0x74, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x4d, 0x61, 0x70,
-	0x12, 0x11, 0x2e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x2e, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x49, 0x6e,
-	0x70, 0x75, 0x74, 0x1a, 0x0f, 0x2e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x2e, 0x57, 0x6f, 0x72, 0x6c,
-	0x64, 0x4d, 0x61, 0x70, 0x22, 0x00, 0x12, 0x48, 0x0a, 0x15, 0x47, 0x65, 0x74, 0x57, 0x6f, 0x72,
-	0x6c, 0x64, 0x4d, 0x6f, 0x64, 0x69, 0x66, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12,
-	0x11, 0x2e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x2e, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x49, 0x6e, 0x70,
-	0x75, 0x74, 0x1a, 0x18, 0x2e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x2e, 0x57, 0x6f, 0x72, 0x6c, 0x64,
-	0x4d, 0x6f, 0x64, 0x69, 0x66, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x00, 0x30, 0x01,
-	0x12, 0x2e, 0x0a, 0x08, 0x47, 0x65, 0x74, 0x54, 0x61, 0x6e, 0x6b, 0x73, 0x12, 0x11, 0x2e, 0x67,
-	0x75, 0x69, 0x64, 0x65, 0x2e, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x1a,
-	0x0b, 0x2e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x2e, 0x54, 0x61, 0x6e, 0x6b, 0x22, 0x00, 0x30, 0x01,
-	0x12, 0x2c, 0x0a, 0x0c, 0x53, 0x65, 0x6e, 0x64, 0x54, 0x61, 0x6e, 0x6b, 0x44, 0x61, 0x74, 0x61,
+	0x74, 0x68, 0x22, 0x5c, 0x0a, 0x04, 0x54, 0x61, 0x6e, 0x6b, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x02, 0x69, 0x64, 0x12, 0x0c, 0x0a, 0x01, 0x78, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x02, 0x52, 0x01, 0x78, 0x12, 0x0c, 0x0a, 0x01, 0x79, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x02, 0x52, 0x01, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x61, 0x6e, 0x67, 0x6c, 0x65, 0x18,
+	0x04, 0x20, 0x01, 0x28, 0x02, 0x52, 0x05, 0x61, 0x6e, 0x67, 0x6c, 0x65, 0x12, 0x12, 0x0a, 0x04,
+	0x6e, 0x61, 0x6d, 0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65,
+	0x22, 0x45, 0x0a, 0x07, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69,
+	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x02, 0x69, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x77,
+	0x72, 0x69, 0x74, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x77, 0x72, 0x69,
+	0x74, 0x65, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x62, 0x6f, 0x64, 0x79, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x04, 0x62, 0x6f, 0x64, 0x79, 0x32, 0xbd, 0x02, 0x0a, 0x04, 0x42, 0x6f, 0x6c, 0x6f,
+	0x12, 0x2a, 0x0a, 0x0c, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x54, 0x61, 0x6e, 0x6b,
 	0x12, 0x0b, 0x2e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x2e, 0x54, 0x61, 0x6e, 0x6b, 0x1a, 0x0b, 0x2e,
-	0x67, 0x75, 0x69, 0x64, 0x65, 0x2e, 0x54, 0x61, 0x6e, 0x6b, 0x22, 0x00, 0x28, 0x01, 0x12, 0x2c,
-	0x0a, 0x04, 0x43, 0x68, 0x61, 0x74, 0x12, 0x0e, 0x2e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x2e, 0x4d,
-	0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x1a, 0x0e, 0x2e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x2e, 0x4d,
-	0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x22, 0x00, 0x28, 0x01, 0x30, 0x01, 0x42, 0x20, 0x5a, 0x1e,
-	0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x65, 0x74, 0x68, 0x61, 0x6e,
-	0x6d, 0x69, 0x6c, 0x2f, 0x62, 0x6f, 0x6c, 0x6f, 0x2f, 0x67, 0x75, 0x69, 0x64, 0x65, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x67, 0x75, 0x69, 0x64, 0x65, 0x2e, 0x54, 0x61, 0x6e, 0x6b, 0x22, 0x00, 0x12, 0x33, 0x0a, 0x0b,
+	0x47, 0x65, 0x74, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x4d, 0x61, 0x70, 0x12, 0x11, 0x2e, 0x67, 0x75,
+	0x69, 0x64, 0x65, 0x2e, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x1a, 0x0f,
+	0x2e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x2e, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x4d, 0x61, 0x70, 0x22,
+	0x00, 0x12, 0x48, 0x0a, 0x15, 0x47, 0x65, 0x74, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x4d, 0x6f, 0x64,
+	0x69, 0x66, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x11, 0x2e, 0x67, 0x75, 0x69,
+	0x64, 0x65, 0x2e, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x1a, 0x18, 0x2e,
+	0x67, 0x75, 0x69, 0x64, 0x65, 0x2e, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x4d, 0x6f, 0x64, 0x69, 0x66,
+	0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x00, 0x30, 0x01, 0x12, 0x2e, 0x0a, 0x08, 0x47,
+	0x65, 0x74, 0x54, 0x61, 0x6e, 0x6b, 0x73, 0x12, 0x11, 0x2e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x2e,
+	0x57, 0x6f, 0x72, 0x6c, 0x64, 0x49, 0x6e, 0x70, 0x75, 0x74, 0x1a, 0x0b, 0x2e, 0x67, 0x75, 0x69,
+	0x64, 0x65, 0x2e, 0x54, 0x61, 0x6e, 0x6b, 0x22, 0x00, 0x30, 0x01, 0x12, 0x2c, 0x0a, 0x0c, 0x53,
+	0x65, 0x6e, 0x64, 0x54, 0x61, 0x6e, 0x6b, 0x44, 0x61, 0x74, 0x61, 0x12, 0x0b, 0x2e, 0x67, 0x75,
+	0x69, 0x64, 0x65, 0x2e, 0x54, 0x61, 0x6e, 0x6b, 0x1a, 0x0b, 0x2e, 0x67, 0x75, 0x69, 0x64, 0x65,
+	0x2e, 0x54, 0x61, 0x6e, 0x6b, 0x22, 0x00, 0x28, 0x01, 0x12, 0x2c, 0x0a, 0x04, 0x43, 0x68, 0x61,
+	0x74, 0x12, 0x0e, 0x2e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67,
+	0x65, 0x1a, 0x0e, 0x2e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67,
+	0x65, 0x22, 0x00, 0x28, 0x01, 0x30, 0x01, 0x42, 0x20, 0x5a, 0x1e, 0x67, 0x69, 0x74, 0x68, 0x75,
+	0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x65, 0x74, 0x68, 0x61, 0x6e, 0x6d, 0x69, 0x6c, 0x2f, 0x62,
+	0x6f, 0x6c, 0x6f, 0x2f, 0x67, 0x75, 0x69, 0x64, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
@@ -528,33 +417,29 @@ func file_guide_bolo_proto_rawDescGZIP() []byte {
 	return file_guide_bolo_proto_rawDescData
 }
 
-var file_guide_bolo_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_guide_bolo_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_guide_bolo_proto_goTypes = []interface{}{
 	(*WorldInput)(nil),        // 0: guide.WorldInput
 	(*WorldMap)(nil),          // 1: guide.WorldMap
 	(*WorldModification)(nil), // 2: guide.WorldModification
-	(*PlayerInput)(nil),       // 3: guide.PlayerInput
-	(*Player)(nil),            // 4: guide.Player
-	(*Tank)(nil),              // 5: guide.Tank
-	(*Message)(nil),           // 6: guide.Message
+	(*Tank)(nil),              // 3: guide.Tank
+	(*Message)(nil),           // 4: guide.Message
 }
 var file_guide_bolo_proto_depIdxs = []int32{
-	4, // 0: guide.Bolo.RegisterPlayer:input_type -> guide.Player
-	0, // 1: guide.Bolo.GetPlayersOnline:input_type -> guide.WorldInput
-	0, // 2: guide.Bolo.GetWorldMap:input_type -> guide.WorldInput
-	0, // 3: guide.Bolo.GetWorldModifications:input_type -> guide.WorldInput
-	0, // 4: guide.Bolo.GetTanks:input_type -> guide.WorldInput
-	5, // 5: guide.Bolo.SendTankData:input_type -> guide.Tank
-	6, // 6: guide.Bolo.Chat:input_type -> guide.Message
-	4, // 7: guide.Bolo.RegisterPlayer:output_type -> guide.Player
-	4, // 8: guide.Bolo.GetPlayersOnline:output_type -> guide.Player
-	1, // 9: guide.Bolo.GetWorldMap:output_type -> guide.WorldMap
-	2, // 10: guide.Bolo.GetWorldModifications:output_type -> guide.WorldModification
-	5, // 11: guide.Bolo.GetTanks:output_type -> guide.Tank
-	5, // 12: guide.Bolo.SendTankData:output_type -> guide.Tank
-	6, // 13: guide.Bolo.Chat:output_type -> guide.Message
-	7, // [7:14] is the sub-list for method output_type
-	0, // [0:7] is the sub-list for method input_type
+	3, // 0: guide.Bolo.RegisterTank:input_type -> guide.Tank
+	0, // 1: guide.Bolo.GetWorldMap:input_type -> guide.WorldInput
+	0, // 2: guide.Bolo.GetWorldModifications:input_type -> guide.WorldInput
+	0, // 3: guide.Bolo.GetTanks:input_type -> guide.WorldInput
+	3, // 4: guide.Bolo.SendTankData:input_type -> guide.Tank
+	4, // 5: guide.Bolo.Chat:input_type -> guide.Message
+	3, // 6: guide.Bolo.RegisterTank:output_type -> guide.Tank
+	1, // 7: guide.Bolo.GetWorldMap:output_type -> guide.WorldMap
+	2, // 8: guide.Bolo.GetWorldModifications:output_type -> guide.WorldModification
+	3, // 9: guide.Bolo.GetTanks:output_type -> guide.Tank
+	3, // 10: guide.Bolo.SendTankData:output_type -> guide.Tank
+	4, // 11: guide.Bolo.Chat:output_type -> guide.Message
+	6, // [6:12] is the sub-list for method output_type
+	0, // [0:6] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -603,30 +488,6 @@ func file_guide_bolo_proto_init() {
 			}
 		}
 		file_guide_bolo_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*PlayerInput); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_guide_bolo_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Player); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_guide_bolo_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Tank); i {
 			case 0:
 				return &v.state
@@ -638,7 +499,7 @@ func file_guide_bolo_proto_init() {
 				return nil
 			}
 		}
-		file_guide_bolo_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+		file_guide_bolo_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Message); i {
 			case 0:
 				return &v.state
@@ -657,7 +518,7 @@ func file_guide_bolo_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_guide_bolo_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
@@ -683,8 +544,7 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type BoloClient interface {
-	RegisterPlayer(ctx context.Context, in *Player, opts ...grpc.CallOption) (*Player, error)
-	GetPlayersOnline(ctx context.Context, in *WorldInput, opts ...grpc.CallOption) (Bolo_GetPlayersOnlineClient, error)
+	RegisterTank(ctx context.Context, in *Tank, opts ...grpc.CallOption) (*Tank, error)
 	GetWorldMap(ctx context.Context, in *WorldInput, opts ...grpc.CallOption) (*WorldMap, error)
 	GetWorldModifications(ctx context.Context, in *WorldInput, opts ...grpc.CallOption) (Bolo_GetWorldModificationsClient, error)
 	GetTanks(ctx context.Context, in *WorldInput, opts ...grpc.CallOption) (Bolo_GetTanksClient, error)
@@ -700,45 +560,13 @@ func NewBoloClient(cc grpc.ClientConnInterface) BoloClient {
 	return &boloClient{cc}
 }
 
-func (c *boloClient) RegisterPlayer(ctx context.Context, in *Player, opts ...grpc.CallOption) (*Player, error) {
-	out := new(Player)
-	err := c.cc.Invoke(ctx, "/guide.Bolo/RegisterPlayer", in, out, opts...)
+func (c *boloClient) RegisterTank(ctx context.Context, in *Tank, opts ...grpc.CallOption) (*Tank, error) {
+	out := new(Tank)
+	err := c.cc.Invoke(ctx, "/guide.Bolo/RegisterTank", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
-}
-
-func (c *boloClient) GetPlayersOnline(ctx context.Context, in *WorldInput, opts ...grpc.CallOption) (Bolo_GetPlayersOnlineClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_Bolo_serviceDesc.Streams[0], "/guide.Bolo/GetPlayersOnline", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &boloGetPlayersOnlineClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type Bolo_GetPlayersOnlineClient interface {
-	Recv() (*Player, error)
-	grpc.ClientStream
-}
-
-type boloGetPlayersOnlineClient struct {
-	grpc.ClientStream
-}
-
-func (x *boloGetPlayersOnlineClient) Recv() (*Player, error) {
-	m := new(Player)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
 }
 
 func (c *boloClient) GetWorldMap(ctx context.Context, in *WorldInput, opts ...grpc.CallOption) (*WorldMap, error) {
@@ -751,7 +579,7 @@ func (c *boloClient) GetWorldMap(ctx context.Context, in *WorldInput, opts ...gr
 }
 
 func (c *boloClient) GetWorldModifications(ctx context.Context, in *WorldInput, opts ...grpc.CallOption) (Bolo_GetWorldModificationsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_Bolo_serviceDesc.Streams[1], "/guide.Bolo/GetWorldModifications", opts...)
+	stream, err := c.cc.NewStream(ctx, &_Bolo_serviceDesc.Streams[0], "/guide.Bolo/GetWorldModifications", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -783,7 +611,7 @@ func (x *boloGetWorldModificationsClient) Recv() (*WorldModification, error) {
 }
 
 func (c *boloClient) GetTanks(ctx context.Context, in *WorldInput, opts ...grpc.CallOption) (Bolo_GetTanksClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_Bolo_serviceDesc.Streams[2], "/guide.Bolo/GetTanks", opts...)
+	stream, err := c.cc.NewStream(ctx, &_Bolo_serviceDesc.Streams[1], "/guide.Bolo/GetTanks", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -815,7 +643,7 @@ func (x *boloGetTanksClient) Recv() (*Tank, error) {
 }
 
 func (c *boloClient) SendTankData(ctx context.Context, opts ...grpc.CallOption) (Bolo_SendTankDataClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_Bolo_serviceDesc.Streams[3], "/guide.Bolo/SendTankData", opts...)
+	stream, err := c.cc.NewStream(ctx, &_Bolo_serviceDesc.Streams[2], "/guide.Bolo/SendTankData", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -849,7 +677,7 @@ func (x *boloSendTankDataClient) CloseAndRecv() (*Tank, error) {
 }
 
 func (c *boloClient) Chat(ctx context.Context, opts ...grpc.CallOption) (Bolo_ChatClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_Bolo_serviceDesc.Streams[4], "/guide.Bolo/Chat", opts...)
+	stream, err := c.cc.NewStream(ctx, &_Bolo_serviceDesc.Streams[3], "/guide.Bolo/Chat", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -881,8 +709,7 @@ func (x *boloChatClient) Recv() (*Message, error) {
 
 // BoloServer is the server API for Bolo service.
 type BoloServer interface {
-	RegisterPlayer(context.Context, *Player) (*Player, error)
-	GetPlayersOnline(*WorldInput, Bolo_GetPlayersOnlineServer) error
+	RegisterTank(context.Context, *Tank) (*Tank, error)
 	GetWorldMap(context.Context, *WorldInput) (*WorldMap, error)
 	GetWorldModifications(*WorldInput, Bolo_GetWorldModificationsServer) error
 	GetTanks(*WorldInput, Bolo_GetTanksServer) error
@@ -894,11 +721,8 @@ type BoloServer interface {
 type UnimplementedBoloServer struct {
 }
 
-func (*UnimplementedBoloServer) RegisterPlayer(context.Context, *Player) (*Player, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RegisterPlayer not implemented")
-}
-func (*UnimplementedBoloServer) GetPlayersOnline(*WorldInput, Bolo_GetPlayersOnlineServer) error {
-	return status.Errorf(codes.Unimplemented, "method GetPlayersOnline not implemented")
+func (*UnimplementedBoloServer) RegisterTank(context.Context, *Tank) (*Tank, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterTank not implemented")
 }
 func (*UnimplementedBoloServer) GetWorldMap(context.Context, *WorldInput) (*WorldMap, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWorldMap not implemented")
@@ -920,43 +744,22 @@ func RegisterBoloServer(s *grpc.Server, srv BoloServer) {
 	s.RegisterService(&_Bolo_serviceDesc, srv)
 }
 
-func _Bolo_RegisterPlayer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Player)
+func _Bolo_RegisterTank_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Tank)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BoloServer).RegisterPlayer(ctx, in)
+		return srv.(BoloServer).RegisterTank(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/guide.Bolo/RegisterPlayer",
+		FullMethod: "/guide.Bolo/RegisterTank",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BoloServer).RegisterPlayer(ctx, req.(*Player))
+		return srv.(BoloServer).RegisterTank(ctx, req.(*Tank))
 	}
 	return interceptor(ctx, in, info, handler)
-}
-
-func _Bolo_GetPlayersOnline_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(WorldInput)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(BoloServer).GetPlayersOnline(m, &boloGetPlayersOnlineServer{stream})
-}
-
-type Bolo_GetPlayersOnlineServer interface {
-	Send(*Player) error
-	grpc.ServerStream
-}
-
-type boloGetPlayersOnlineServer struct {
-	grpc.ServerStream
-}
-
-func (x *boloGetPlayersOnlineServer) Send(m *Player) error {
-	return x.ServerStream.SendMsg(m)
 }
 
 func _Bolo_GetWorldMap_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -1076,8 +879,8 @@ var _Bolo_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*BoloServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "RegisterPlayer",
-			Handler:    _Bolo_RegisterPlayer_Handler,
+			MethodName: "RegisterTank",
+			Handler:    _Bolo_RegisterTank_Handler,
 		},
 		{
 			MethodName: "GetWorldMap",
@@ -1085,11 +888,6 @@ var _Bolo_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "GetPlayersOnline",
-			Handler:       _Bolo_GetPlayersOnline_Handler,
-			ServerStreams: true,
-		},
 		{
 			StreamName:    "GetWorldModifications",
 			Handler:       _Bolo_GetWorldModifications_Handler,

@@ -51,22 +51,15 @@ func main() {
 	bolo.Client = guide.NewBoloClient(conn)
 	defer conn.Close()
 
-	// get players
-	players, err := bolo.Client.GetPlayersOnline(ctx, &guide.WorldInput{Id: 1})
-	if err != nil {
-		log.Fatalf("Failed to get players: %v", err)
-	}
-	println(players)
-
 	// register ourself
-	player, err := bolo.Client.RegisterPlayer(ctx, &guide.Player{
+	t, err := bolo.Client.RegisterTank(ctx, &guide.Tank{
 		Name: "ethan",
 	})
 	if err != nil {
 		log.Fatalf("Failed to register player: %v", err)
 	}
-	println(fmt.Sprintf("PLAYER: %+v", player))
-	bolo.ID = player.Id
+	println(fmt.Sprintf("Tank: %+v", t))
+	bolo.ID = t.Id
 
 	// build the world map using the tiles downloaded from the server
 	serverWM, err := bolo.Client.GetWorldMap(ctx, &guide.WorldInput{Id: 1})
@@ -76,7 +69,7 @@ func main() {
 	bolo.World = maps.NewWorldMap(serverWM, art)
 
 	// create our player's tank
-	bolo.Tanks = append(bolo.Tanks, tank.NewTank(player.Id, physics.Vector{X: 200, Y: 200}, art, bolo.World, bolo.BulletManager))
+	bolo.Tanks = append(bolo.Tanks, tank.NewTank(t.Id, physics.Vector{X: 200, Y: 200}, art, bolo.World, bolo.BulletManager))
 
 	// set up our server streams
 
@@ -95,23 +88,28 @@ func main() {
 				log.Fatal(err)
 			}
 			defer bolo.TankStreamIn.CloseSend()
-			t, err := bolo.TankStreamIn.Recv()
-			if err != nil && err != io.EOF {
-				log.Fatalf("Failed to receive tank stream in: %v", err)
-			}
-
-			if t != nil && t.Id != bolo.ID {
-				found := false
-				for i := range bolo.Tanks {
-					if bolo.Tanks[i].ID == t.Id {
-						found = true
-						bolo.Tanks[i].Element.Position = physics.NewVector(float64(t.X), float64(t.Y))
-						bolo.Tanks[i].Element.Angle = physics.NewAngle(float64(t.Angle))
-						break
-					}
+			for {
+				t, err := bolo.TankStreamIn.Recv()
+				if err == io.EOF {
+					break
 				}
-				if !found {
-					bolo.Tanks = append(bolo.Tanks, tank.NewOtherTank(t.Id, physics.NewVector(float64(t.X), float64(t.Y)), bolo.Art))
+				if err != nil {
+					log.Fatalf("Failed to receive tank stream in: %v", err)
+				}
+
+				if t != nil && t.Id != bolo.ID {
+					found := false
+					for i := range bolo.Tanks {
+						if bolo.Tanks[i].ID == t.Id {
+							found = true
+							bolo.Tanks[i].Element.Position = physics.NewVector(float64(t.X), float64(t.Y))
+							bolo.Tanks[i].Element.Angle = physics.NewAngle(float64(t.Angle))
+							break
+						}
+					}
+					if !found {
+						bolo.Tanks = append(bolo.Tanks, tank.NewOtherTank(t.Id, physics.NewVector(float64(t.X), float64(t.Y)), bolo.Art))
+					}
 				}
 			}
 		}

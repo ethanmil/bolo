@@ -36,7 +36,6 @@ var _ guide.BoloServer = &BoloServer{}
 
 // BoloServer -
 type BoloServer struct {
-	players  []*guide.Player
 	tanks    []*guide.Tank
 	worldMap *guide.WorldMap
 }
@@ -48,22 +47,12 @@ func NewBoloServer() *BoloServer {
 	}
 }
 
-// RegisterPlayer -
-func (s *BoloServer) RegisterPlayer(ctx context.Context, player *guide.Player) (*guide.Player, error) {
-	player.Id = int32(len(s.players) + 1)
-	s.players = append(s.players, player)
-	log.Printf("PLAYER: %v", s.players)
-	return player, nil
-}
-
-// GetPlayersOnline -
-func (s *BoloServer) GetPlayersOnline(world *guide.WorldInput, stream guide.Bolo_GetPlayersOnlineServer) error {
-	for _, player := range s.players {
-		if err := stream.Send(player); err != nil {
-			return err
-		}
-	}
-	return nil
+// RegisterTank -
+func (s *BoloServer) RegisterTank(ctx context.Context, tank *guide.Tank) (*guide.Tank, error) {
+	tank.Id = int32(len(s.tanks) + 1)
+	s.tanks = append(s.tanks, tank)
+	log.Printf("TANKS: %v", s.tanks)
+	return tank, nil
 }
 
 // GetWorldMap -
@@ -79,14 +68,13 @@ func (s *BoloServer) GetWorldModifications(world *guide.WorldInput, stream guide
 
 // GetTanks -
 func (s *BoloServer) GetTanks(world *guide.WorldInput, stream guide.Bolo_GetTanksServer) error {
-	log.Println("get tanks called")
 	if s.tanks != nil {
 		for _, tank := range s.tanks {
 			if tank != nil {
 				if err := stream.Send(tank); err != nil {
+					log.Fatalf("Failed to send tank data: %v", err)
 					return err
 				}
-				log.Printf("Tanks from server: %v", tank)
 			}
 		}
 	}
