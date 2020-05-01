@@ -15,6 +15,7 @@ const (
 
 // Bullet -
 type Bullet struct {
+	TankID  int32
 	Element *animation.Element
 }
 

@@ -23,8 +23,9 @@ func NewManager(art *ebiten.Image) *Manager {
 }
 
 // AddBullet -
-func (m *Manager) AddBullet(position physics.Vector, angle physics.Angle) {
+func (m *Manager) AddBullet(tankID int32, position physics.Vector, angle physics.Angle) {
 	m.bullets = append(m.bullets, &Bullet{
+		TankID: tankID,
 		Element: &animation.Element{
 			Sprite:   m.art.SubImage(image.Rect(16, 144, 22, 152)).(*ebiten.Image),
 			Position: position,

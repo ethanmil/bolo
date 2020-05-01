@@ -147,7 +147,7 @@ func (b *Bolo) SyncBulletData(ctx context.Context) {
 		}
 		defer b.BulletStreamIn.CloseSend()
 		for {
-			b, err := b.BulletStreamIn.Recv()
+			bul, err := b.BulletStreamIn.Recv()
 			if err == io.EOF {
 				break
 			}
@@ -155,19 +155,12 @@ func (b *Bolo) SyncBulletData(ctx context.Context) {
 				log.Fatalf("Failed to receive bullet stream in: %v", err)
 			}
 
-			if b != nil {
-				found := false
-				for i := range b.Tanks {
-					if b.Tanks[i].ID == t.Id {
-						found = true
-						b.Tanks[i].Element.Position = physics.NewVector(float64(t.X), float64(t.Y))
-						b.Tanks[i].Element.Angle = physics.NewAngle(float64(t.Angle))
-						break
-					}
-				}
-				if !found {
-					b.Tanks = append(b.Tanks, tank.NewOtherTank(t.Id, physics.NewVector(float64(t.X), float64(t.Y)), b.Art))
-				}
+			if bul != nil && bul.TankId != b.ID {
+				b.BulletManager.AddBullet(
+					bul.TankId,
+					physics.NewVector(float64(bul.X), float64(bul.Y)),
+					physics.NewAngle(float64(bul.Angle)),
+				)
 			}
 		}
 	}
