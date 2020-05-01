@@ -106,6 +106,7 @@ func main() {
 					if bolo.Tanks[i].ID == t.Id {
 						found = true
 						bolo.Tanks[i].Element.Position = physics.NewVector(float64(t.X), float64(t.Y))
+						bolo.Tanks[i].Element.Angle = physics.NewAngle(float64(t.Angle))
 						break
 					}
 				}

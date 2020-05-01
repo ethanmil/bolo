@@ -51,9 +51,10 @@ func (b *Bolo) Update(screen *ebiten.Image) error {
 
 	// sync tank to server
 	err = b.TankStreamOut.Send(&guide.Tank{
-		Id: b.ID,
-		X:  float32(b.Tanks[0].Element.Position.X),
-		Y:  float32(b.Tanks[0].Element.Position.Y),
+		Id:    b.ID,
+		X:     float32(b.Tanks[0].Element.Position.X),
+		Y:     float32(b.Tanks[0].Element.Position.Y),
+		Angle: float32(b.Tanks[0].Element.Angle),
 	})
 	if err != nil && err != io.EOF {
 		log.Fatalf("Send: %v", err)
