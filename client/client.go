@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"log"
 
@@ -36,7 +37,7 @@ func init() {
 
 func main() {
 	// create game object
-	bolo := bologame.New(1, art, bullet.NewManager(art))
+	bolo := bologame.New(art, bullet.NewManager(art))
 
 	// connect client
 	opts := []grpc.DialOption{
@@ -48,6 +49,22 @@ func main() {
 	}
 	bolo.Client = guide.NewBoloClient(conn)
 	defer conn.Close()
+
+	// get players
+	players, err := bolo.Client.GetPlayersOnline(ctx, &guide.WorldInput{Id: 1})
+	if err != nil {
+		log.Fatalf("Failed to get players: %v", err)
+	}
+	println(players)
+
+	// register ourselves
+	player, err := bolo.Client.RegisterPlayer(ctx, &guide.Player{
+		Name: "ethan",
+	})
+	if err != nil {
+		log.Fatalf("Failed to register player: %v", err)
+	}
+	println(fmt.Sprintf("PLAYER: %+v", player))
 
 	// build the world map using the tiles downloaded from the server
 	serverWM, err := bolo.Client.GetWorldMap(ctx, &guide.WorldInput{Id: 1})

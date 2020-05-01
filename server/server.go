@@ -45,8 +45,13 @@ type BoloServer struct {
 func NewBoloServer() *BoloServer {
 	return &BoloServer{
 		worldMap: util.BuildMapFromFile(),
-		tanks:    make([]*guide.Tank, 8),
 	}
+}
+
+// RegisterPlayer -
+func (s *BoloServer) RegisterPlayer(ctx context.Context, player *guide.Player) (*guide.Player, error) {
+	s.players = append(s.players, player)
+	return player, nil
 }
 
 // GetPlayersOnline -
@@ -56,7 +61,6 @@ func (s *BoloServer) GetPlayersOnline(world *guide.WorldInput, stream guide.Bolo
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -90,7 +94,7 @@ func (s *BoloServer) SendTankData(stream guide.Bolo_SendTankDataServer) error {
 		tank, err := stream.Recv()
 		if err == io.EOF {
 			endTime := time.Now()
-			println(endTime.Sub(startTime).Seconds())
+			println(int(endTime.Sub(startTime).Seconds()))
 			return stream.SendAndClose(tank)
 		}
 		if err != nil {
@@ -99,7 +103,7 @@ func (s *BoloServer) SendTankData(stream guide.Bolo_SendTankDataServer) error {
 		}
 
 		if tank != nil {
-			s.tanks[tank.Id] = tank
+			s.tanks = append(s.tanks, tank)
 		}
 	}
 }

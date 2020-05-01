@@ -28,9 +28,8 @@ type Bolo struct {
 }
 
 // New -
-func New(id int32, art *ebiten.Image, bulletManager *bullet.Manager) *Bolo {
+func New(art *ebiten.Image, bulletManager *bullet.Manager) *Bolo {
 	return &Bolo{
-		ID:            id,
 		Art:           art,
 		Tanks:         make([]tank.Tank, 8),
 		BulletManager: bulletManager,
