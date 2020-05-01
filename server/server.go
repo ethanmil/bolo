@@ -146,14 +146,14 @@ func (s *BoloServer) ShootBullet(stream guide.Bolo_ShootBulletServer) error {
 		if bullet != nil {
 			found := false
 			for i := range s.tanks {
-				if s.tanks[i].Id == tank.Id {
+				if s.bullets[i].Id == bullet.Id {
 					found = true
-					s.tanks[i] = tank
+					s.bullets[i] = bullet
 					break
 				}
 			}
 			if !found {
-				s.tanks = append(s.tanks, tank)
+				s.bullets = append(s.bullets, bullet)
 			}
 		}
 	}

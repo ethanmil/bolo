@@ -19,14 +19,16 @@ var err error
 
 // Bolo -
 type Bolo struct {
-	ID            int32
-	Art           *ebiten.Image
-	World         *maps.WorldMap
-	Tanks         []tank.Tank
-	BulletManager *bullet.Manager
-	Client        guide.BoloClient
-	TankStreamIn  guide.Bolo_GetTanksClient
-	TankStreamOut guide.Bolo_SendTankDataClient
+	ID              int32
+	Art             *ebiten.Image
+	World           *maps.WorldMap
+	Tanks           []tank.Tank
+	BulletManager   *bullet.Manager
+	Client          guide.BoloClient
+	TankStreamIn    guide.Bolo_GetTanksClient
+	TankStreamOut   guide.Bolo_SendTankDataClient
+	BulletStreamIn  guide.Bolo_GetBulletsClient
+	BulletStreamOut guide.Bolo_ShootBulletClient
 }
 
 // New -
@@ -119,6 +121,41 @@ func (b *Bolo) SyncTankData(ctx context.Context) {
 			}
 
 			if t != nil && t.Id != b.ID {
+				found := false
+				for i := range b.Tanks {
+					if b.Tanks[i].ID == t.Id {
+						found = true
+						b.Tanks[i].Element.Position = physics.NewVector(float64(t.X), float64(t.Y))
+						b.Tanks[i].Element.Angle = physics.NewAngle(float64(t.Angle))
+						break
+					}
+				}
+				if !found {
+					b.Tanks = append(b.Tanks, tank.NewOtherTank(t.Id, physics.NewVector(float64(t.X), float64(t.Y)), b.Art))
+				}
+			}
+		}
+	}
+}
+
+// SyncBulletData -
+func (b *Bolo) SyncBulletData(ctx context.Context) {
+	for {
+		b.BulletStreamIn, err = b.Client.GetBullets(ctx, &guide.WorldInput{Id: 1})
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer b.BulletStreamIn.CloseSend()
+		for {
+			b, err := b.BulletStreamIn.Recv()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				log.Fatalf("Failed to receive bullet stream in: %v", err)
+			}
+
+			if b != nil {
 				found := false
 				for i := range b.Tanks {
 					if b.Tanks[i].ID == t.Id {
