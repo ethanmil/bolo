@@ -3,6 +3,15 @@ package guide;
 
 option go_package = "github.com/ethanmil/bolo/guide";
 
+message UserInput {
+	int32 id = 1;
+	bool up = 2;
+	bool down = 3;
+	bool left = 4;
+	bool right = 5;
+	bool shoot = 6;
+}
+
 message WorldInput {
 	int32 id = 1;
 }
@@ -11,13 +20,6 @@ message WorldMap {
 	int32 sizeH = 1;
 	int32 sizeW = 2;
 	repeated string tiles = 3;
-}
-
-message WorldModification {
-	int32 x = 1;
-	int32 y = 2;
-	int32 type = 3;
-	int32 health = 4;
 }
 
 message Tank {
@@ -36,6 +38,12 @@ message Bullet {
 	float angle = 5;
 }
 
+message GameState {
+	repeated Bullet bullets = 1;
+	repeated Tank tanks = 2;
+	WorldMap worldMap = 3;
+}
+
 message Message {
 	int32 id = 1;
 	string writer = 2;
@@ -45,17 +53,9 @@ message Message {
 service Bolo {
 	rpc RegisterTank(Tank) returns (Tank) {}
 
-	rpc GetWorldMap(WorldInput) returns (WorldMap) {}
+	rpc ClientInputStream(stream UserInput) returns () {}
 
-	rpc GetWorldModifications(WorldInput) returns (stream WorldModification) {}
-
-	rpc GetTanks(WorldInput) returns (stream Tank) {}
-
-	rpc SendTankData(stream Tank) returns (Tank) {}
-
-	rpc GetBullets(WorldInput) returns (stream Bullet) {}
-
-	rpc ShootBullet(stream Bullet) returns (Bullet) {}
+	rpc ServerGameStateStream(WorldInput) returns (stream GameState) {}
 
 	rpc Chat(stream Message) returns (stream Message) {}
 }

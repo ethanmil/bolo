@@ -31,6 +31,13 @@ func NewBullet(id int32, position physics.Vector, angle physics.Angle, art *ebit
 	}
 }
 
+// Update -
+func (b *Bullet) Update(delta float32) {
+	movement := b.Element.Angle.GetVector()
+	b.Element.Position.X += movement.X * speed * delta
+	b.Element.Position.Y += movement.Y * speed * delta
+}
+
 // Draw -
 func (b *Bullet) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}

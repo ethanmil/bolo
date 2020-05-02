@@ -2,14 +2,8 @@ package main
 
 import (
 	"context"
-	"log"
 
 	"github.com/ethanmil/bolo/client/bologame"
-	"github.com/ethanmil/bolo/client/bullet"
-	"github.com/ethanmil/bolo/client/maps"
-	"github.com/ethanmil/bolo/client/tank"
-	"github.com/ethanmil/bolo/guide"
-	"github.com/ethanmil/bolo/lib/physics"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"github.com/sirupsen/logrus"
@@ -18,7 +12,7 @@ import (
 const name = "ethan"
 
 var art *ebiten.Image
-var delta float64
+var delta float32
 var err error
 
 var ctx context.Context
@@ -42,40 +36,9 @@ func main() {
 
 	bolo.RegisterTank(ctx)
 
-	// send our tank's data
-	bolo.TankStreamOut, err = bolo.Client.SendTankData(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer bolo.TankStreamOut.CloseAndRecv()
-
-	// send our bullet data
-	bolo.BulletStreamOut, err = bolo.Client.ShootBullet(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer bolo.BulletStreamOut.CloseAndRecv()
-
-	bolo.BulletManager = bullet.NewManager(bolo.BulletStreamOut, art)
-
-	// build the world map using the tiles downloaded from the server
-	serverWM, err := bolo.Client.GetWorldMap(ctx, &guide.WorldInput{Id: 1})
-	if err != nil {
-		log.Fatalf("Failed to get world map: %v", err)
-	}
-	bolo.World = maps.NewWorldMap(serverWM, art)
-
-	// create our player's tank
-	bolo.Tanks = append(bolo.Tanks, tank.NewTank(bolo.ID, physics.Vector{X: 200, Y: 200}, art, bolo.World, bolo.BulletManager))
-
-	// always check for more tank data
+	// always update game state
 	go func() {
-		bolo.SyncTankData(ctx)
-	}()
-
-	// always check for more bullet data
-	go func() {
-		bolo.SyncBulletData(ctx)
+		bolo.ServerGameStateStream(ctx)
 	}()
 
 	// run our ebiten game

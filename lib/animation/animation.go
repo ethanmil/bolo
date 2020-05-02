@@ -26,13 +26,13 @@ func (e *Element) Draw(screen *ebiten.Image) {
 	}
 	op.GeoM.Translate(-float64(w)/2, -float64(h)/2)
 	op.GeoM.Rotate(float64(e.Angle))
-	op.GeoM.Translate(e.Position.X, e.Position.Y)
+	op.GeoM.Translate(float64(e.Position.X), float64(e.Position.Y))
 
 	screen.DrawImage(e.Sprite, op)
 }
 
 // Update -
-func (e *Element) Update(speed, delta float64, overrideVector *physics.Vector) {
+func (e *Element) Update(speed, delta float32, overrideVector *physics.Vector) {
 	movement := e.Angle.GetVector()
 	if overrideVector != nil {
 		movement = *overrideVector // for handling collisions

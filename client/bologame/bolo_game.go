@@ -19,16 +19,12 @@ var err error
 
 // Bolo -
 type Bolo struct {
-	ID              int32
-	Art             *ebiten.Image
-	World           *maps.WorldMap
-	Tanks           []tank.Tank
-	BulletManager   *bullet.Manager
-	Client          guide.BoloClient
-	TankStreamIn    guide.Bolo_GetTanksClient
-	TankStreamOut   guide.Bolo_SendTankDataClient
-	BulletStreamIn  guide.Bolo_GetBulletsClient
-	BulletStreamOut guide.Bolo_ShootBulletClient
+	ID      int32
+	Art     *ebiten.Image
+	World   *maps.WorldMap
+	Tanks   []tank.Tank
+	Bullets []bullet.Bullet
+	Client  guide.BoloClient
 }
 
 // New -
@@ -44,24 +40,11 @@ func (b *Bolo) Update(screen *ebiten.Image) error {
 	b.World.Draw(screen)
 
 	for i := range b.Tanks {
-		if b.Tanks[i].ID == b.ID {
-			b.Tanks[i].Update(2)
-		}
 		b.Tanks[i].Draw(screen)
 	}
 
-	b.BulletManager.Update(2)
-	b.BulletManager.Draw(screen)
-
-	// sync tank to server
-	err = b.TankStreamOut.Send(&guide.Tank{
-		Id:    b.ID,
-		X:     float32(b.Tanks[0].Element.Position.X),
-		Y:     float32(b.Tanks[0].Element.Position.Y),
-		Angle: float32(b.Tanks[0].Element.Angle),
-	})
-	if err != nil && err != io.EOF {
-		log.Fatalf("Send: %v", err)
+	for i := range b.Bullets {
+		b.Bullets[i].Draw(screen)
 	}
 
 	return nil
@@ -94,6 +77,8 @@ func (b *Bolo) ConnectToServer() *grpc.ClientConn {
 func (b *Bolo) RegisterTank(ctx context.Context) {
 	t, err := b.Client.RegisterTank(ctx, &guide.Tank{
 		Name: "ethan",
+		X:    200,
+		Y:    200,
 	})
 	if err != nil {
 		log.Fatalf("Failed to register player: %v", err)
@@ -102,65 +87,75 @@ func (b *Bolo) RegisterTank(ctx context.Context) {
 	b.ID = t.Id
 }
 
-// SyncTankData -
-func (b *Bolo) SyncTankData(ctx context.Context) {
+// ServerGameStateStream -
+func (b *Bolo) ServerGameStateStream(ctx context.Context) {
 	for {
-		b.TankStreamIn, err = b.Client.GetTanks(ctx, &guide.WorldInput{Id: 1})
+		stream, err := b.Client.ServerGameStateStream(ctx, &guide.WorldInput{Id: 1})
 		if err != nil {
 			log.Fatal(err)
 		}
-		defer b.TankStreamIn.CloseSend()
+		defer stream.CloseSend()
 		for {
-			t, err := b.TankStreamIn.Recv()
+			state, err := stream.Recv()
 			if err == io.EOF {
 				break
 			}
 			if err != nil {
-				log.Fatalf("Failed to receive tank stream in: %v", err)
+				log.Fatalf("Failed to receive game stream: %v", err)
 			}
 
-			if t != nil && t.Id != b.ID {
-				found := false
-				for i := range b.Tanks {
-					if b.Tanks[i].ID == t.Id {
-						found = true
-						b.Tanks[i].Element.Position = physics.NewVector(float64(t.X), float64(t.Y))
-						b.Tanks[i].Element.Angle = physics.NewAngle(float64(t.Angle))
-						break
-					}
-				}
-				if !found {
-					b.Tanks = append(b.Tanks, tank.NewOtherTank(t.Id, physics.NewVector(float64(t.X), float64(t.Y)), b.Art))
-				}
-			}
+			b.setGameFromState(state)
 		}
 	}
 }
 
-// SyncBulletData -
-func (b *Bolo) SyncBulletData(ctx context.Context) {
-	for {
-		b.BulletStreamIn, err = b.Client.GetBullets(ctx, &guide.WorldInput{Id: 1})
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer b.BulletStreamIn.CloseSend()
-		for {
-			bul, err := b.BulletStreamIn.Recv()
-			if err == io.EOF {
+func (b *Bolo) setGameFromState(state *guide.GameState) {
+	for i := range state.Tanks {
+		t := tank.NewTank(
+			state.Tanks[i].Id,
+			physics.Vector{
+				X: state.Tanks[i].X,
+				Y: state.Tanks[i].Y,
+			},
+			physics.NewAngle(state.Tanks[i].Angle),
+			b.Art,
+		)
+
+		found := false
+		for j := range b.Tanks {
+			if b.Tanks[j].ID == state.Tanks[i].Id {
+				found = true
+				b.Tanks[j] = t
 				break
 			}
-			if err != nil {
-				log.Fatalf("Failed to receive bullet stream in: %v", err)
-			}
+		}
 
-			if bul != nil {
-				b.BulletManager.SyncBulletsFromServer(
-					bul.Id,
-					physics.NewVector(float64(bul.X), float64(bul.Y)),
-					physics.NewAngle(float64(bul.Angle)),
-				)
-			}
+		if !found {
+			b.Tanks = append(b.Tanks, t)
 		}
 	}
+
+	for i := range state.Bullets {
+		bul := bullet.NewBullet(
+			state.Bullets[i].Id,
+			physics.NewVector(state.Bullets[i].X, state.Bullets[i].Y),
+			physics.NewAngle(state.Bullets[i].Angle),
+			b.Art,
+		)
+
+		found := false
+		for j := range b.Bullets {
+			if b.Bullets[j].ID == state.Bullets[i].Id {
+				found = true
+				b.Bullets[j] = bul
+				break
+			}
+		}
+
+		if !found {
+			b.Bullets = append(b.Bullets, bul)
+		}
+	}
+
+	b.World = maps.NewWorldMap(state.WorldMap, b.Art)
 }

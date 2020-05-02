@@ -4,12 +4,12 @@ import "math"
 
 // Vector -
 type Vector struct {
-	X float64
-	Y float64
+	X float32
+	Y float32
 }
 
 // NewVector -
-func NewVector(x, y float64) Vector {
+func NewVector(x, y float32) Vector {
 	return Vector{
 		X: x,
 		Y: y,
@@ -23,6 +23,6 @@ func (v *Vector) Reset() {
 }
 
 // GetAngle -
-func (v *Vector) GetAngle() float64 {
-	return math.Atan2(v.Y, v.X)
+func (v *Vector) GetAngle() float32 {
+	return float32(math.Atan2(float64(v.Y), float64(v.X)))
 }
