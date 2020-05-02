@@ -2,6 +2,7 @@ package tank
 
 import (
 	"image"
+	"log"
 	"math"
 	"time"
 
@@ -74,6 +75,8 @@ func (t *Tank) HandleMovement(input *guide.UserInput) {
 
 	// determine acceleration/max speed based on tile
 	currentTile := t.worldMap.GetTileAt(t.Element.Position.X+16, t.Element.Position.Y+16) // TODO use width/height rather than hardcoding
+	log.Printf("Current Tile %v", currentTile.Typ)
+	// log.Printf("Tank position: %v", t.Element.Position)
 
 	if t.speed > currentTile.Speed {
 		t.speed -= t.speed / 50

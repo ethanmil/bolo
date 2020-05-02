@@ -59,7 +59,7 @@ func BuildMapFromFile() *WorldMap {
 func (wm *WorldMap) GetStateMap() *guide.WorldMap {
 	tiles := []string{}
 	for i := range wm.Tiles {
-		tiles = append(tiles, wm.Tiles[i].typ)
+		tiles = append(tiles, wm.Tiles[i].Typ)
 	}
 
 	return &guide.WorldMap{
@@ -71,7 +71,10 @@ func (wm *WorldMap) GetStateMap() *guide.WorldMap {
 
 // GetTileAt -
 func (wm *WorldMap) GetTileAt(x, y float32) *Tile {
-	seq := int((x / 32) + ((y / 32) * wm.Size.Y))
+	xPos := int(x / 32)
+	yPos := int(y / 32)
+
+	seq := xPos + (yPos * int(wm.Size.Y))
 	return &wm.Tiles[seq]
 }
 

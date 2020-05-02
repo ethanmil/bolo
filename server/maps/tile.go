@@ -9,7 +9,7 @@ import (
 type Tile struct {
 	Speed   float32
 	Element animation.Element
-	typ     string
+	Typ     string
 }
 
 // NewTile -
@@ -38,7 +38,7 @@ func NewTile(typ string, position physics.Vector) (t Tile) {
 		t.Speed = 0.3
 	}
 
-	t.typ = typ
+	t.Typ = typ
 	t.Element.Position = position
 
 	return t
