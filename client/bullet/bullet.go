@@ -15,13 +15,14 @@ const (
 
 // Bullet -
 type Bullet struct {
-	TankID  int32
+	ID      int32
 	Element *animation.Element
 }
 
 // NewBullet -
-func NewBullet(position physics.Vector, angle physics.Angle, art *ebiten.Image) Bullet {
+func NewBullet(id int32, position physics.Vector, angle physics.Angle, art *ebiten.Image) Bullet {
 	return Bullet{
+		ID: id,
 		Element: &animation.Element{
 			Sprite:   art.SubImage(image.Rect(16, 144, 22, 152)).(*ebiten.Image),
 			Position: position,

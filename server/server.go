@@ -145,7 +145,7 @@ func (s *BoloServer) ShootBullet(stream guide.Bolo_ShootBulletServer) error {
 
 		if bullet != nil {
 			found := false
-			for i := range s.tanks {
+			for i := range s.bullets {
 				if s.bullets[i].Id == bullet.Id {
 					found = true
 					s.bullets[i] = bullet
@@ -158,6 +158,32 @@ func (s *BoloServer) ShootBullet(stream guide.Bolo_ShootBulletServer) error {
 		}
 	}
 }
+
+// // RemoveBullet -
+// func (s *BoloServer) RemoveBullet(stream guide.Bolo_RemoveBulletClient) error {
+// 	startTime := time.Now()
+// 	for {
+// 		bullet, err := stream.Recv()
+// 		if err == io.EOF {
+// 			endTime := time.Now()
+// 			println(int(endTime.Sub(startTime).Seconds()))
+// 			return stream.SendAndClose(bullet)
+// 		}
+// 		if err != nil {
+// 			log.Printf("error receiving: %v | %v", err, stream.Context())
+// 			return err
+// 		}
+
+// 		if bullet != nil {
+// 			for i := range s.bullets {
+// 				if s.bullets[i].Id == bullet.Id {
+// 					s.bullets[i] = bullet // remove bullet actually, lol
+// 					break
+// 				}
+// 			}
+// 		}
+// 	}
+// }
 
 // Chat -
 func (s *BoloServer) Chat(stream guide.Bolo_ChatServer) error {

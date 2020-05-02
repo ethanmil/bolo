@@ -2,7 +2,10 @@ package bullet
 
 import (
 	"image"
+	"io"
+	"log"
 
+	"github.com/ethanmil/bolo/guide"
 	"github.com/ethanmil/bolo/lib/animation"
 	"github.com/ethanmil/bolo/lib/physics"
 	"github.com/hajimehoshi/ebiten"
@@ -10,28 +13,51 @@ import (
 
 // Manager -
 type Manager struct {
-	bullets []*Bullet
-	art     *ebiten.Image
+	bullets      []*Bullet
+	art          *ebiten.Image
+	bulletStream guide.Bolo_ShootBulletClient
 }
 
 // NewManager -
-func NewManager(art *ebiten.Image) *Manager {
+func NewManager(bulletStream guide.Bolo_ShootBulletClient, art *ebiten.Image) *Manager {
 	return &Manager{
-		bullets: make([]*Bullet, 50),
-		art:     art,
+		art:          art,
+		bulletStream: bulletStream,
 	}
 }
 
 // AddBullet -
-func (m *Manager) AddBullet(tankID int32, position physics.Vector, angle physics.Angle) {
-	m.bullets = append(m.bullets, &Bullet{
-		TankID: tankID,
-		Element: &animation.Element{
-			Sprite:   m.art.SubImage(image.Rect(16, 144, 22, 152)).(*ebiten.Image),
-			Position: position,
-			Angle:    angle,
-		},
+func (m *Manager) AddBullet(position physics.Vector, angle physics.Angle) {
+	err := m.bulletStream.Send(&guide.Bullet{
+		Id:    int32(len(m.bullets) + 1),
+		X:     float32(position.X),
+		Y:     float32(position.Y),
+		Angle: float32(angle),
 	})
+	if err != nil && err != io.EOF {
+		log.Fatalf("Send: %v", err)
+	}
+}
+
+// SyncBulletsFromServer -
+func (m *Manager) SyncBulletsFromServer(id int32, position physics.Vector, angle physics.Angle) {
+	found := false
+	for i := range m.bullets {
+		if m.bullets[i].ID == id {
+			found = true
+			break
+		}
+	}
+	if !found {
+		m.bullets = append(m.bullets, &Bullet{
+			ID: id,
+			Element: &animation.Element{
+				Sprite:   m.art.SubImage(image.Rect(16, 144, 22, 152)).(*ebiten.Image),
+				Position: position,
+				Angle:    angle,
+			},
+		})
+	}
 }
 
 // Update -

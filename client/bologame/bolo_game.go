@@ -32,11 +32,10 @@ type Bolo struct {
 }
 
 // New -
-func New(art *ebiten.Image, bulletManager *bullet.Manager) *Bolo {
+func New(art *ebiten.Image) *Bolo {
 	return &Bolo{
-		Art:           art,
-		Tanks:         []tank.Tank{},
-		BulletManager: bulletManager,
+		Art:   art,
+		Tanks: []tank.Tank{},
 	}
 }
 
@@ -155,9 +154,9 @@ func (b *Bolo) SyncBulletData(ctx context.Context) {
 				log.Fatalf("Failed to receive bullet stream in: %v", err)
 			}
 
-			if bul != nil && bul.TankId != b.ID {
-				b.BulletManager.AddBullet(
-					bul.TankId,
+			if bul != nil {
+				b.BulletManager.SyncBulletsFromServer(
+					bul.Id,
 					physics.NewVector(float64(bul.X), float64(bul.Y)),
 					physics.NewAngle(float64(bul.Angle)),
 				)

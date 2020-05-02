@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"log"
-	"time"
 
 	"github.com/ethanmil/bolo/client/bologame"
 	"github.com/ethanmil/bolo/client/bullet"
@@ -35,13 +34,29 @@ func init() {
 
 func main() {
 	// create game object
-	bolo := bologame.New(art, bullet.NewManager(art))
+	bolo := bologame.New(art)
 
 	// connect client
 	conn := bolo.ConnectToServer()
 	defer conn.Close()
 
 	bolo.RegisterTank(ctx)
+
+	// send our tank's data
+	bolo.TankStreamOut, err = bolo.Client.SendTankData(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer bolo.TankStreamOut.CloseAndRecv()
+
+	// send our bullet data
+	bolo.BulletStreamOut, err = bolo.Client.ShootBullet(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer bolo.BulletStreamOut.CloseAndRecv()
+
+	bolo.BulletManager = bullet.NewManager(bolo.BulletStreamOut, art)
 
 	// build the world map using the tiles downloaded from the server
 	serverWM, err := bolo.Client.GetWorldMap(ctx, &guide.WorldInput{Id: 1})
@@ -53,26 +68,20 @@ func main() {
 	// create our player's tank
 	bolo.Tanks = append(bolo.Tanks, tank.NewTank(bolo.ID, physics.Vector{X: 200, Y: 200}, art, bolo.World, bolo.BulletManager))
 
-	// set up our server streams
-
-	// send our tank's data
-	bolo.TankStreamOut, err = bolo.Client.SendTankData(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer bolo.TankStreamOut.CloseAndRecv()
-
 	// always check for more tank data
 	go func() {
 		bolo.SyncTankData(ctx)
+	}()
+
+	// always check for more bullet data
+	go func() {
+		bolo.SyncBulletData(ctx)
 	}()
 
 	// run our ebiten game
 	ebiten.SetWindowSize(800, 600)
 	ebiten.SetWindowTitle("GoBolo")
 	ebiten.SetRunnableOnUnfocused(true)
-
-	time.Sleep(500)
 
 	err = ebiten.RunGame(bolo)
 	if err != nil {
