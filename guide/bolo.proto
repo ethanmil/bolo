@@ -50,10 +50,12 @@ message Message {
 	string body = 3;
 }
 
+message Ok {}
+
 service Bolo {
 	rpc RegisterTank(Tank) returns (Tank) {}
 
-	rpc ClientInputStream(stream UserInput) returns () {}
+	rpc ClientInputStream(stream UserInput) returns (Ok) {}
 
 	rpc ServerGameStateStream(WorldInput) returns (stream GameState) {}
 

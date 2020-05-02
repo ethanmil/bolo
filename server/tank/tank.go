@@ -23,6 +23,7 @@ type Tank struct {
 	speed    float32
 	lastShot time.Time
 	worldMap *maps.WorldMap
+	updated  time.Time
 }
 
 // NewTank -
@@ -52,44 +53,24 @@ func NewOtherTank(id int32, position physics.Vector, art *ebiten.Image) Tank {
 	}
 }
 
-// Update -
-func (t *Tank) Update(delta float32) {
-	if ebiten.IsKeyPressed(ebiten.KeySpace) {
-		t.shoot()
-	}
+// HandleMovement -
+func (t *Tank) HandleMovement(input *guide.UserInput) {
+	delta := float32(time.Now().Sub(t.Element.Updated).Milliseconds())
 
-	t.handleMovement(delta)
-}
-
-// Draw -
-func (t *Tank) Draw(screen *ebiten.Image) {
-	t.Element.Draw(screen)
-}
-
-func (t *Tank) shoot() {
-	if time.Since(t.lastShot) >= bulletCooldown {
-		t.lastShot = time.Now()
-	}
-}
-
-func (t *Tank) handleMovement(delta float32) {
 	// determine acceleration/max speed based on tile
 	currentTile := t.worldMap.GetTileAt(t.Element.Position.X+16, t.Element.Position.Y+16) // TODO use width/height rather than hardcoding
-
-	// get surrounding tiles (4)
-	// surroundingTiles := t.worldMap.GetTilesWithin(t.Element.Position.X, t.Element.Position.Y, t.Element.Position.X+32, t.Element.Position.Y+32)
 
 	if t.speed > currentTile.Speed {
 		t.speed -= t.speed / 50
 	}
 
-	if ebiten.IsKeyPressed(ebiten.KeyA) {
+	if input.left {
 		t.Element.Angle -= 0.02
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyD) {
+	if input.right {
 		t.Element.Angle += 0.02
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyS) {
+	if input.down {
 		if t.speed >= 0.005 {
 			t.speed -= 0.005
 		}
@@ -97,22 +78,6 @@ func (t *Tank) handleMovement(delta float32) {
 
 	// handle collision
 	var overrideVector *physics.Vector
-	// for _, tile := range surroundingTiles {
-	// 	for _, tileCol := range tile.Element.Collision {
-	// 		for _, tankCol := range t.Element.Collision {
-	// 			if tileCol == tankCol {
-	// 				// use natural angle & 0 out the proper x or y
-	// 				v := t.Element.Angle.GetVector()
-	// 				println(fmt.Sprintf("Tank: %+v | Tile: %+v", t.Element.Position, tile.Element.Position))
-
-	// 				// figure out whether the tile is in quadrant 1,2,3,4 relative to the tank,
-	// 				// for each possibility, 0 out the X or Y respectively if the current vector would ruin us.
-
-	// 				overrideVector = &v
-	// 			}
-	// 		}
-	// 	}
-	// }
 	v := t.Element.Angle.GetVector()
 	if v.X < 0 {
 		nextXPosition := t.Element.Position.X + v.X*t.speed*delta
@@ -155,7 +120,7 @@ func (t *Tank) handleMovement(delta float32) {
 		}
 	}
 
-	if ebiten.IsKeyPressed(ebiten.KeyW) {
+	if input.up {
 		if t.speed < currentTile.Speed {
 			t.speed += currentTile.Speed * 0.008
 		}
@@ -165,7 +130,13 @@ func (t *Tank) handleMovement(delta float32) {
 		}
 	}
 
-	t.Element.Update(t.speed, delta, overrideVector)
+	t.Element.Update(t.speed, overrideVector)
+}
+
+func (t *Tank) shoot() {
+	if time.Since(t.lastShot) >= bulletCooldown {
+		t.lastShot = time.Now()
+	}
 }
 
 func (t *Tank) getGunPosition() (v physics.Vector) {

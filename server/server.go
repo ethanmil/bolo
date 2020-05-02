@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"io"
 	"log"
 	"net"
 
@@ -73,6 +74,26 @@ func (s *BoloServer) ServerGameStateStream(world *guide.WorldInput, stream guide
 		return err
 	}
 	return nil
+}
+
+// ClientInputStream -
+func (s *BoloServer) ClientInputStream(stream guide.Bolo_ClientInputStreamServer) error {
+	for {
+		input, err := stream.Recv()
+		if err == io.EOF {
+			return stream.SendAndClose(&guide.Ok{})
+		}
+		if err != nil {
+			return err
+		}
+
+		// update tanks & bullets based on client's info
+		for i := range s.tanks {
+			if s.tanks[i].Id == input.Id {
+				s.tanks[i].HandleMovement(input)
+			}
+		}
+	}
 }
 
 // Chat -
