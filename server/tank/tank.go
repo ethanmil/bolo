@@ -71,14 +71,14 @@ func (t *Tank) HandleMovement(input *guide.UserInput) {
 	if t.Element.Updated.IsZero() {
 		t.Element.Updated = time.Now()
 	}
-	delta := float32(time.Now().Sub(t.Element.Updated).Seconds())
+	delta := float32(time.Now().Sub(t.Element.Updated).Milliseconds())
 
 	// determine acceleration/max speed based on tile
 	currentTile := t.worldMap.GetTileAt(t.Element.Position.X+16, t.Element.Position.Y+16) // TODO use width/height rather than hardcoding
 	log.Printf("Current Tile %v", currentTile.Typ)
 	// log.Printf("Tank position: %v", t.Element.Position)
 
-	if t.speed > currentTile.Speed {
+	if t.speed > currentTile.MaxSpeed {
 		t.speed -= t.speed / 50
 	}
 
@@ -89,8 +89,8 @@ func (t *Tank) HandleMovement(input *guide.UserInput) {
 		t.Element.Angle += 0.02
 	}
 	if input.Down {
-		if t.speed >= 0.005 {
-			t.speed -= 0.005
+		if t.speed >= 0.0005 {
+			t.speed -= 0.0005
 		}
 	}
 
@@ -139,12 +139,12 @@ func (t *Tank) HandleMovement(input *guide.UserInput) {
 	}
 
 	if input.Up {
-		if t.speed < currentTile.Speed {
-			t.speed += currentTile.Speed * 0.008
+		if t.speed < currentTile.MaxSpeed {
+			t.speed += currentTile.Speed * 0.0008
 		}
 	} else {
-		if t.speed >= 0.01 {
-			t.speed -= 0.01
+		if t.speed >= 0.001 {
+			t.speed -= 0.001
 		}
 	}
 
