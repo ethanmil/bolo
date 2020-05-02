@@ -2,8 +2,8 @@ package bullet
 
 import (
 	"image"
-	"log"
 
+	"github.com/ethanmil/bolo/guide"
 	"github.com/ethanmil/bolo/lib/animation"
 	"github.com/ethanmil/bolo/lib/physics"
 	"github.com/hajimehoshi/ebiten"
@@ -31,20 +31,19 @@ func NewBullet(id int32, position physics.Vector, angle physics.Angle, art *ebit
 	}
 }
 
+// GetStateBullet -
+func (b *Bullet) GetStateBullet() *guide.Bullet {
+	return &guide.Bullet{
+		Id:    b.ID,
+		X:     b.Element.Position.X,
+		Y:     b.Element.Position.Y,
+		Angle: float32(b.Element.Angle),
+	}
+}
+
 // Update -
 func (b *Bullet) Update(delta float32) {
 	movement := b.Element.Angle.GetVector()
 	b.Element.Position.X += movement.X * speed * delta
 	b.Element.Position.Y += movement.Y * speed * delta
-}
-
-// Draw -
-func (b *Bullet) Draw(screen *ebiten.Image) {
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Rotate(float64(b.Element.Angle))
-	op.GeoM.Translate(float64(b.Element.Position.X), float64(b.Element.Position.Y))
-	err := screen.DrawImage(b.Element.Sprite, op)
-	if err != nil {
-		log.Fatal(err)
-	}
 }

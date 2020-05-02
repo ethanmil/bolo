@@ -5,9 +5,10 @@ import (
 	"math"
 	"time"
 
-	"github.com/ethanmil/bolo/client/maps"
+	"github.com/ethanmil/bolo/guide"
 	"github.com/ethanmil/bolo/lib/animation"
 	"github.com/ethanmil/bolo/lib/physics"
+	"github.com/ethanmil/bolo/server/maps"
 	"github.com/hajimehoshi/ebiten"
 )
 
@@ -20,6 +21,7 @@ const (
 type Tank struct {
 	ID       int32
 	Element  *animation.Element
+	Name     string
 	speed    float32
 	lastShot time.Time
 	worldMap *maps.WorldMap
@@ -27,12 +29,11 @@ type Tank struct {
 }
 
 // NewTank -
-func NewTank(id int32, position physics.Vector, art *ebiten.Image, worldMap *maps.WorldMap) Tank {
+func NewTank(id int32, worldMap *maps.WorldMap) Tank {
 	return Tank{
 		ID: id,
 		Element: &animation.Element{
-			Sprite:    art.SubImage(image.Rect(0, 684, 32, 716)).(*ebiten.Image),
-			Position:  position,
+			Position:  physics.NewVector(200, 200),
 			Angle:     physics.NewAngle(float32(0)),
 			Collision: []int{1},
 		},
@@ -53,6 +54,17 @@ func NewOtherTank(id int32, position physics.Vector, art *ebiten.Image) Tank {
 	}
 }
 
+// GetStateTank -
+func (t *Tank) GetStateTank() *guide.Tank {
+	return &guide.Tank{
+		Id:    t.ID,
+		X:     t.Element.Position.X,
+		Y:     t.Element.Position.Y,
+		Angle: float32(t.Element.Angle),
+		Name:  t.Name,
+	}
+}
+
 // HandleMovement -
 func (t *Tank) HandleMovement(input *guide.UserInput) {
 	delta := float32(time.Now().Sub(t.Element.Updated).Milliseconds())
@@ -64,13 +76,13 @@ func (t *Tank) HandleMovement(input *guide.UserInput) {
 		t.speed -= t.speed / 50
 	}
 
-	if input.left {
+	if input.Left {
 		t.Element.Angle -= 0.02
 	}
-	if input.right {
+	if input.Right {
 		t.Element.Angle += 0.02
 	}
-	if input.down {
+	if input.Down {
 		if t.speed >= 0.005 {
 			t.speed -= 0.005
 		}
@@ -120,7 +132,7 @@ func (t *Tank) HandleMovement(input *guide.UserInput) {
 		}
 	}
 
-	if input.up {
+	if input.Up {
 		if t.speed < currentTile.Speed {
 			t.speed += currentTile.Speed * 0.008
 		}
