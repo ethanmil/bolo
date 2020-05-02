@@ -39,22 +39,23 @@ var _ guide.BoloServer = &BoloServer{}
 
 // BoloServer -
 type BoloServer struct {
-	tanks    []tank.Tank
-	bullets  []bullet.Bullet
-	worldMap *maps.WorldMap
+	tanks         []tank.Tank
+	bulletManager *bullet.Manager
+	worldMap      *maps.WorldMap
 }
 
 // NewBoloServer -
 func NewBoloServer() *BoloServer {
 	return &BoloServer{
-		worldMap: maps.BuildMapFromFile(),
+		worldMap:      maps.BuildMapFromFile(),
+		bulletManager: bullet.NewManager(),
 	}
 }
 
 // RegisterTank -
 func (s *BoloServer) RegisterTank(ctx context.Context, t *guide.Tank) (*guide.Tank, error) {
 	t.Id = int32(len(s.tanks) + 1)
-	s.tanks = append(s.tanks, tank.NewTank(t.Id, s.worldMap))
+	s.tanks = append(s.tanks, tank.NewTank(t.Id, s.bulletManager, s.worldMap))
 	return t, nil
 }
 
@@ -88,9 +89,12 @@ func (s *BoloServer) ClientInputStream(stream guide.Bolo_ClientInputStreamServer
 		// update tanks & bullets based on client's info
 		for i := range s.tanks {
 			if s.tanks[i].ID == input.Id {
-				s.tanks[i].HandleMovement(input)
+				s.tanks[i].HandleInput(input)
 			}
 		}
+
+		// update bullets
+		s.bulletManager.Update()
 	}
 }
 
@@ -106,8 +110,9 @@ func (s *BoloServer) getStateFromGame() *guide.GameState {
 		gs.Tanks = append(gs.Tanks, s.tanks[i].GetStateTank())
 	}
 
-	for i := range s.bullets {
-		gs.Bullets = append(gs.Bullets, s.bullets[i].GetStateBullet())
+	for i := range s.bulletManager.Bullets {
+		log.Printf("Bullets in array: %v", s.bulletManager.Bullets[i])
+		gs.Bullets = append(gs.Bullets, s.bulletManager.Bullets[i].GetStateBullet())
 	}
 
 	gs.WorldMap = s.worldMap.GetStateMap()

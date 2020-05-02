@@ -9,6 +9,7 @@ import (
 	"github.com/ethanmil/bolo/guide"
 	"github.com/ethanmil/bolo/lib/animation"
 	"github.com/ethanmil/bolo/lib/physics"
+	"github.com/ethanmil/bolo/server/bullet"
 	"github.com/ethanmil/bolo/server/maps"
 	"github.com/hajimehoshi/ebiten"
 )
@@ -20,17 +21,18 @@ const (
 
 // Tank -
 type Tank struct {
-	ID       int32
-	Element  *animation.Element
-	Name     string
-	speed    float32
-	lastShot time.Time
-	worldMap *maps.WorldMap
-	updated  time.Time
+	ID            int32
+	Element       *animation.Element
+	Name          string
+	speed         float32
+	lastShot      time.Time
+	worldMap      *maps.WorldMap
+	bulletManager *bullet.Manager
+	updated       time.Time
 }
 
 // NewTank -
-func NewTank(id int32, worldMap *maps.WorldMap) Tank {
+func NewTank(id int32, bulletManager *bullet.Manager, worldMap *maps.WorldMap) Tank {
 	return Tank{
 		ID: id,
 		Element: &animation.Element{
@@ -38,7 +40,8 @@ func NewTank(id int32, worldMap *maps.WorldMap) Tank {
 			Angle:     physics.NewAngle(float32(0)),
 			Collision: []int{1},
 		},
-		worldMap: worldMap,
+		worldMap:      worldMap,
+		bulletManager: bulletManager,
 	}
 }
 
@@ -66,8 +69,8 @@ func (t *Tank) GetStateTank() *guide.Tank {
 	}
 }
 
-// HandleMovement -
-func (t *Tank) HandleMovement(input *guide.UserInput) {
+// HandleInput -
+func (t *Tank) HandleInput(input *guide.UserInput) {
 	if t.Element.Updated.IsZero() {
 		t.Element.Updated = time.Now()
 	}
@@ -75,8 +78,6 @@ func (t *Tank) HandleMovement(input *guide.UserInput) {
 
 	// determine acceleration/max speed based on tile
 	currentTile := t.worldMap.GetTileAt(t.Element.Position.X+16, t.Element.Position.Y+16) // TODO use width/height rather than hardcoding
-	log.Printf("Current Tile %v", currentTile.Typ)
-	// log.Printf("Tank position: %v", t.Element.Position)
 
 	if t.speed > currentTile.MaxSpeed {
 		t.speed -= t.speed / 50
@@ -148,18 +149,27 @@ func (t *Tank) HandleMovement(input *guide.UserInput) {
 		}
 	}
 
+	if input.Shoot {
+		t.shoot()
+	}
+
 	t.Element.Update(t.speed, overrideVector)
 }
 
 func (t *Tank) shoot() {
 	if time.Since(t.lastShot) >= bulletCooldown {
+		log.Printf("SHOT")
 		t.lastShot = time.Now()
+		t.bulletManager.Bullets = append(t.bulletManager.Bullets, bullet.NewBullet(
+			int32(len(t.bulletManager.Bullets)+1),
+			t.getGunPosition(),
+			t.Element.Angle,
+		))
 	}
 }
 
 func (t *Tank) getGunPosition() (v physics.Vector) {
-	w, h := t.Element.Sprite.Size()
-	v.X = t.Element.Position.X + (float32(math.Cos(float64(t.Element.Angle))) * float32(w) / 2)
-	v.Y = t.Element.Position.Y + (float32(math.Sin(float64(t.Element.Angle))) * float32(h) / 2)
+	v.X = t.Element.Position.X + (float32(math.Cos(float64(t.Element.Angle))) * float32(32) / 2)
+	v.Y = t.Element.Position.Y + (float32(math.Sin(float64(t.Element.Angle))) * float32(32) / 2)
 	return v
 }

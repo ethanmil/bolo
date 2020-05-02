@@ -1,16 +1,15 @@
 package bullet
 
 import (
-	"image"
+	"time"
 
 	"github.com/ethanmil/bolo/guide"
 	"github.com/ethanmil/bolo/lib/animation"
 	"github.com/ethanmil/bolo/lib/physics"
-	"github.com/hajimehoshi/ebiten"
 )
 
 const (
-	speed = 2
+	speed = 0.02
 )
 
 // Bullet -
@@ -20,11 +19,10 @@ type Bullet struct {
 }
 
 // NewBullet -
-func NewBullet(id int32, position physics.Vector, angle physics.Angle, art *ebiten.Image) Bullet {
+func NewBullet(id int32, position physics.Vector, angle physics.Angle) Bullet {
 	return Bullet{
 		ID: id,
 		Element: &animation.Element{
-			Sprite:   art.SubImage(image.Rect(16, 144, 22, 152)).(*ebiten.Image),
 			Position: position,
 			Angle:    angle,
 		},
@@ -42,7 +40,11 @@ func (b *Bullet) GetStateBullet() *guide.Bullet {
 }
 
 // Update -
-func (b *Bullet) Update(delta float32) {
+func (b *Bullet) Update() {
+	if b.Element.Updated.IsZero() {
+		b.Element.Updated = time.Now()
+	}
+	delta := float32(time.Now().Sub(b.Element.Updated).Milliseconds())
 	movement := b.Element.Angle.GetVector()
 	b.Element.Position.X += movement.X * speed * delta
 	b.Element.Position.Y += movement.Y * speed * delta
