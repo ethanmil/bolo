@@ -19,12 +19,13 @@ var err error
 
 // Bolo -
 type Bolo struct {
-	ID      int32
-	Art     *ebiten.Image
-	World   *maps.WorldMap
-	Tanks   []tank.Tank
-	Bullets []bullet.Bullet
-	Client  guide.BoloClient
+	ID          int32
+	Art         *ebiten.Image
+	World       *maps.WorldMap
+	Tanks       []tank.Tank
+	Bullets     []bullet.Bullet
+	Client      guide.BoloClient
+	InputStream guide.Bolo_ClientInputStreamClient
 }
 
 // New -
@@ -46,6 +47,8 @@ func (b *Bolo) Update(screen *ebiten.Image) error {
 	for i := range b.Bullets {
 		b.Bullets[i].Draw(screen)
 	}
+
+	b.SendInputToServer()
 
 	return nil
 }
@@ -106,6 +109,31 @@ func (b *Bolo) ServerGameStateStream(ctx context.Context) {
 
 			b.setGameFromState(state)
 		}
+	}
+}
+
+// SendInputToServer -
+func (b *Bolo) SendInputToServer() {
+	input := &guide.UserInput{Id: b.ID}
+
+	if ebiten.IsKeyPressed(ebiten.KeyA) {
+		input.Left = true
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyW) {
+		input.Up = true
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyD) {
+		input.Right = true
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyS) {
+		input.Down = true
+	}
+	if ebiten.IsKeyPressed(ebiten.KeySpace) {
+		input.Shoot = true
+	}
+
+	if err := b.InputStream.Send(input); err != nil {
+		log.Fatalf("Failed to send input data to the server: %v", err)
 	}
 }
 

@@ -71,7 +71,7 @@ func (wm *WorldMap) GetStateMap() *guide.WorldMap {
 
 // GetTileAt -
 func (wm *WorldMap) GetTileAt(x, y float32) *Tile {
-	seq := int(x + (y * wm.Size.Y))
+	seq := int((x / 32) + ((y / 32) * wm.Size.Y))
 	return &wm.Tiles[seq]
 }
 

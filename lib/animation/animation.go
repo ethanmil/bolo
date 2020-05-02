@@ -36,7 +36,7 @@ func (e *Element) Draw(screen *ebiten.Image) {
 
 // Update -
 func (e *Element) Update(speed float32, overrideVector *physics.Vector) {
-	delta := float32(time.Now().Sub(e.Updated).Milliseconds())
+	delta := float32(time.Now().Sub(e.Updated).Seconds())
 	movement := e.Angle.GetVector()
 	if overrideVector != nil {
 		movement = *overrideVector // for handling collisions

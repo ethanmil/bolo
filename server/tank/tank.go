@@ -67,7 +67,10 @@ func (t *Tank) GetStateTank() *guide.Tank {
 
 // HandleMovement -
 func (t *Tank) HandleMovement(input *guide.UserInput) {
-	delta := float32(time.Now().Sub(t.Element.Updated).Milliseconds())
+	if t.Element.Updated.IsZero() {
+		t.Element.Updated = time.Now()
+	}
+	delta := float32(time.Now().Sub(t.Element.Updated).Seconds())
 
 	// determine acceleration/max speed based on tile
 	currentTile := t.worldMap.GetTileAt(t.Element.Position.X+16, t.Element.Position.Y+16) // TODO use width/height rather than hardcoding

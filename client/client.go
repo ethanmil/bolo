@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 
 	"github.com/ethanmil/bolo/client/bologame"
 	"github.com/hajimehoshi/ebiten"
@@ -35,6 +36,12 @@ func main() {
 	defer conn.Close()
 
 	bolo.RegisterTank(ctx)
+
+	bolo.InputStream, err = bolo.Client.ClientInputStream(context.Background())
+	if err != nil {
+		log.Fatalf("Failed to start client input stream %v", err)
+	}
+	defer bolo.InputStream.CloseAndRecv()
 
 	// always update game state
 	go func() {
