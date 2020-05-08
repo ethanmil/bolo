@@ -57,5 +57,7 @@ service Bolo {
 
 	rpc ShootBullet(stream Bullet) returns (Bullet) {}
 
+	rpc RemoveBullet (stream Bullet) returns (Bullet) {}
+	
 	rpc Chat(stream Message) returns (stream Message) {}
 }

@@ -19,16 +19,17 @@ var err error
 
 // Bolo -
 type Bolo struct {
-	ID              int32
-	Art             *ebiten.Image
-	World           *maps.WorldMap
-	Tanks           []tank.Tank
-	BulletManager   *bullet.Manager
-	Client          guide.BoloClient
-	TankStreamIn    guide.Bolo_GetTanksClient
-	TankStreamOut   guide.Bolo_SendTankDataClient
-	BulletStreamIn  guide.Bolo_GetBulletsClient
-	BulletStreamOut guide.Bolo_ShootBulletClient
+	ID                 int32
+	Art                *ebiten.Image
+	World              *maps.WorldMap
+	Tanks              []tank.Tank
+	BulletManager      *bullet.Manager
+	Client             guide.BoloClient
+	TankStreamIn       guide.Bolo_GetTanksClient
+	TankStreamOut      guide.Bolo_SendTankDataClient
+	BulletStreamIn     guide.Bolo_GetBulletsClient
+	BulletStreamShoot  guide.Bolo_ShootBulletClient
+	BulletStreamRemove guide.Bolo_RemoveBulletClient
 }
 
 // New -
@@ -140,6 +141,7 @@ func (b *Bolo) SyncTankData(ctx context.Context) {
 // SyncBulletData -
 func (b *Bolo) SyncBulletData(ctx context.Context) {
 	for {
+		b.BulletManager.Clear()
 		b.BulletStreamIn, err = b.Client.GetBullets(ctx, &guide.WorldInput{Id: 1})
 		if err != nil {
 			log.Fatal(err)
@@ -155,7 +157,7 @@ func (b *Bolo) SyncBulletData(ctx context.Context) {
 			}
 
 			if bul != nil {
-				b.BulletManager.SyncBulletsFromServer(
+				b.BulletManager.SyncBulletFromServer(
 					bul.Id,
 					physics.NewVector(float64(bul.X), float64(bul.Y)),
 					physics.NewAngle(float64(bul.Angle)),

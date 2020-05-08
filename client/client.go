@@ -50,13 +50,20 @@ func main() {
 	defer bolo.TankStreamOut.CloseAndRecv()
 
 	// send our bullet data
-	bolo.BulletStreamOut, err = bolo.Client.ShootBullet(ctx)
+	bolo.BulletStreamShoot, err = bolo.Client.ShootBullet(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer bolo.BulletStreamOut.CloseAndRecv()
+	defer bolo.BulletStreamShoot.CloseAndRecv()
 
-	bolo.BulletManager = bullet.NewManager(bolo.BulletStreamOut, art)
+	// send our bullet removal data
+	bolo.BulletStreamRemove, err = bolo.Client.RemoveBullet(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer bolo.BulletStreamRemove.CloseAndRecv()
+
+	bolo.BulletManager = bullet.NewManager(bolo.BulletStreamShoot, bolo.BulletStreamRemove, art)
 
 	// build the world map using the tiles downloaded from the server
 	serverWM, err := bolo.Client.GetWorldMap(ctx, &guide.WorldInput{Id: 1})
