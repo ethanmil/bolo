@@ -14,6 +14,7 @@ import (
 
 const (
 	bulletSpeed    = 0.3
+	bulletRange    = 50
 	bulletCooldown = time.Millisecond * 250
 )
 

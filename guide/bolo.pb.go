@@ -464,7 +464,7 @@ var file_guide_bolo_proto_rawDesc = []byte{
 	0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x02, 0x69, 0x64, 0x12,
 	0x16, 0x0a, 0x06, 0x77, 0x72, 0x69, 0x74, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
 	0x06, 0x77, 0x72, 0x69, 0x74, 0x65, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x62, 0x6f, 0x64, 0x79, 0x18,
-	0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x62, 0x6f, 0x64, 0x79, 0x32, 0xa2, 0x03, 0x0a, 0x04,
+	0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x62, 0x6f, 0x64, 0x79, 0x32, 0xd4, 0x03, 0x0a, 0x04,
 	0x42, 0x6f, 0x6c, 0x6f, 0x12, 0x2a, 0x0a, 0x0c, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72,
 	0x54, 0x61, 0x6e, 0x6b, 0x12, 0x0b, 0x2e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x2e, 0x54, 0x61, 0x6e,
 	0x6b, 0x1a, 0x0b, 0x2e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x2e, 0x54, 0x61, 0x6e, 0x6b, 0x22, 0x00,
@@ -488,12 +488,15 @@ var file_guide_bolo_proto_rawDesc = []byte{
 	0x01, 0x12, 0x2f, 0x0a, 0x0b, 0x53, 0x68, 0x6f, 0x6f, 0x74, 0x42, 0x75, 0x6c, 0x6c, 0x65, 0x74,
 	0x12, 0x0d, 0x2e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x2e, 0x42, 0x75, 0x6c, 0x6c, 0x65, 0x74, 0x1a,
 	0x0d, 0x2e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x2e, 0x42, 0x75, 0x6c, 0x6c, 0x65, 0x74, 0x22, 0x00,
-	0x28, 0x01, 0x12, 0x2c, 0x0a, 0x04, 0x43, 0x68, 0x61, 0x74, 0x12, 0x0e, 0x2e, 0x67, 0x75, 0x69,
-	0x64, 0x65, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x1a, 0x0e, 0x2e, 0x67, 0x75, 0x69,
-	0x64, 0x65, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x22, 0x00, 0x28, 0x01, 0x30, 0x01,
-	0x42, 0x20, 0x5a, 0x1e, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x65,
-	0x74, 0x68, 0x61, 0x6e, 0x6d, 0x69, 0x6c, 0x2f, 0x62, 0x6f, 0x6c, 0x6f, 0x2f, 0x67, 0x75, 0x69,
-	0x64, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x28, 0x01, 0x12, 0x30, 0x0a, 0x0c, 0x52, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x42, 0x75, 0x6c, 0x6c,
+	0x65, 0x74, 0x12, 0x0d, 0x2e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x2e, 0x42, 0x75, 0x6c, 0x6c, 0x65,
+	0x74, 0x1a, 0x0d, 0x2e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x2e, 0x42, 0x75, 0x6c, 0x6c, 0x65, 0x74,
+	0x22, 0x00, 0x28, 0x01, 0x12, 0x2c, 0x0a, 0x04, 0x43, 0x68, 0x61, 0x74, 0x12, 0x0e, 0x2e, 0x67,
+	0x75, 0x69, 0x64, 0x65, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x1a, 0x0e, 0x2e, 0x67,
+	0x75, 0x69, 0x64, 0x65, 0x2e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x22, 0x00, 0x28, 0x01,
+	0x30, 0x01, 0x42, 0x20, 0x5a, 0x1e, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d,
+	0x2f, 0x65, 0x74, 0x68, 0x61, 0x6e, 0x6d, 0x69, 0x6c, 0x2f, 0x62, 0x6f, 0x6c, 0x6f, 0x2f, 0x67,
+	0x75, 0x69, 0x64, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -525,17 +528,19 @@ var file_guide_bolo_proto_depIdxs = []int32{
 	3, // 4: guide.Bolo.SendTankData:input_type -> guide.Tank
 	0, // 5: guide.Bolo.GetBullets:input_type -> guide.WorldInput
 	4, // 6: guide.Bolo.ShootBullet:input_type -> guide.Bullet
-	5, // 7: guide.Bolo.Chat:input_type -> guide.Message
-	3, // 8: guide.Bolo.RegisterTank:output_type -> guide.Tank
-	1, // 9: guide.Bolo.GetWorldMap:output_type -> guide.WorldMap
-	2, // 10: guide.Bolo.GetWorldModifications:output_type -> guide.WorldModification
-	3, // 11: guide.Bolo.GetTanks:output_type -> guide.Tank
-	3, // 12: guide.Bolo.SendTankData:output_type -> guide.Tank
-	4, // 13: guide.Bolo.GetBullets:output_type -> guide.Bullet
-	4, // 14: guide.Bolo.ShootBullet:output_type -> guide.Bullet
-	5, // 15: guide.Bolo.Chat:output_type -> guide.Message
-	8, // [8:16] is the sub-list for method output_type
-	0, // [0:8] is the sub-list for method input_type
+	4, // 7: guide.Bolo.RemoveBullet:input_type -> guide.Bullet
+	5, // 8: guide.Bolo.Chat:input_type -> guide.Message
+	3, // 9: guide.Bolo.RegisterTank:output_type -> guide.Tank
+	1, // 10: guide.Bolo.GetWorldMap:output_type -> guide.WorldMap
+	2, // 11: guide.Bolo.GetWorldModifications:output_type -> guide.WorldModification
+	3, // 12: guide.Bolo.GetTanks:output_type -> guide.Tank
+	3, // 13: guide.Bolo.SendTankData:output_type -> guide.Tank
+	4, // 14: guide.Bolo.GetBullets:output_type -> guide.Bullet
+	4, // 15: guide.Bolo.ShootBullet:output_type -> guide.Bullet
+	4, // 16: guide.Bolo.RemoveBullet:output_type -> guide.Bullet
+	5, // 17: guide.Bolo.Chat:output_type -> guide.Message
+	9, // [9:18] is the sub-list for method output_type
+	0, // [0:9] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -659,6 +664,7 @@ type BoloClient interface {
 	SendTankData(ctx context.Context, opts ...grpc.CallOption) (Bolo_SendTankDataClient, error)
 	GetBullets(ctx context.Context, in *WorldInput, opts ...grpc.CallOption) (Bolo_GetBulletsClient, error)
 	ShootBullet(ctx context.Context, opts ...grpc.CallOption) (Bolo_ShootBulletClient, error)
+	RemoveBullet(ctx context.Context, opts ...grpc.CallOption) (Bolo_RemoveBulletClient, error)
 	Chat(ctx context.Context, opts ...grpc.CallOption) (Bolo_ChatClient, error)
 }
 
@@ -852,8 +858,42 @@ func (x *boloShootBulletClient) CloseAndRecv() (*Bullet, error) {
 	return m, nil
 }
 
+func (c *boloClient) RemoveBullet(ctx context.Context, opts ...grpc.CallOption) (Bolo_RemoveBulletClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_Bolo_serviceDesc.Streams[5], "/guide.Bolo/RemoveBullet", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &boloRemoveBulletClient{stream}
+	return x, nil
+}
+
+type Bolo_RemoveBulletClient interface {
+	Send(*Bullet) error
+	CloseAndRecv() (*Bullet, error)
+	grpc.ClientStream
+}
+
+type boloRemoveBulletClient struct {
+	grpc.ClientStream
+}
+
+func (x *boloRemoveBulletClient) Send(m *Bullet) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *boloRemoveBulletClient) CloseAndRecv() (*Bullet, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(Bullet)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *boloClient) Chat(ctx context.Context, opts ...grpc.CallOption) (Bolo_ChatClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_Bolo_serviceDesc.Streams[5], "/guide.Bolo/Chat", opts...)
+	stream, err := c.cc.NewStream(ctx, &_Bolo_serviceDesc.Streams[6], "/guide.Bolo/Chat", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -892,6 +932,7 @@ type BoloServer interface {
 	SendTankData(Bolo_SendTankDataServer) error
 	GetBullets(*WorldInput, Bolo_GetBulletsServer) error
 	ShootBullet(Bolo_ShootBulletServer) error
+	RemoveBullet(Bolo_RemoveBulletServer) error
 	Chat(Bolo_ChatServer) error
 }
 
@@ -919,6 +960,9 @@ func (*UnimplementedBoloServer) GetBullets(*WorldInput, Bolo_GetBulletsServer) e
 }
 func (*UnimplementedBoloServer) ShootBullet(Bolo_ShootBulletServer) error {
 	return status.Errorf(codes.Unimplemented, "method ShootBullet not implemented")
+}
+func (*UnimplementedBoloServer) RemoveBullet(Bolo_RemoveBulletServer) error {
+	return status.Errorf(codes.Unimplemented, "method RemoveBullet not implemented")
 }
 func (*UnimplementedBoloServer) Chat(Bolo_ChatServer) error {
 	return status.Errorf(codes.Unimplemented, "method Chat not implemented")
@@ -1079,6 +1123,32 @@ func (x *boloShootBulletServer) Recv() (*Bullet, error) {
 	return m, nil
 }
 
+func _Bolo_RemoveBullet_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(BoloServer).RemoveBullet(&boloRemoveBulletServer{stream})
+}
+
+type Bolo_RemoveBulletServer interface {
+	SendAndClose(*Bullet) error
+	Recv() (*Bullet, error)
+	grpc.ServerStream
+}
+
+type boloRemoveBulletServer struct {
+	grpc.ServerStream
+}
+
+func (x *boloRemoveBulletServer) SendAndClose(m *Bullet) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *boloRemoveBulletServer) Recv() (*Bullet, error) {
+	m := new(Bullet)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func _Bolo_Chat_Handler(srv interface{}, stream grpc.ServerStream) error {
 	return srv.(BoloServer).Chat(&boloChatServer{stream})
 }
@@ -1142,6 +1212,11 @@ var _Bolo_serviceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "ShootBullet",
 			Handler:       _Bolo_ShootBullet_Handler,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "RemoveBullet",
+			Handler:       _Bolo_RemoveBullet_Handler,
 			ClientStreams: true,
 		},
 		{

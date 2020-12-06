@@ -3,6 +3,7 @@ package bullet
 import (
 	"image"
 	"log"
+	"math"
 
 	"github.com/ethanmil/bolo/lib/animation"
 	"github.com/ethanmil/bolo/lib/physics"
@@ -15,8 +16,9 @@ const (
 
 // Bullet -
 type Bullet struct {
-	ID      int32
-	Element *animation.Element
+	ID        int32
+	Element   *animation.Element
+	initPoint physics.Vector
 }
 
 // NewBullet -
@@ -28,6 +30,7 @@ func NewBullet(id int32, position physics.Vector, angle physics.Angle, art *ebit
 			Position: position,
 			Angle:    angle,
 		},
+		initPoint: position,
 	}
 }
 
@@ -47,4 +50,11 @@ func (b *Bullet) Draw(screen *ebiten.Image) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+// IsPastRange -
+func (b *Bullet) IsPastRange(r float64) bool {
+	first := math.Pow(b.Element.Position.X-b.initPoint.X, 2)
+	second := math.Pow(b.Element.Position.Y-b.initPoint.Y, 2)
+	return math.Sqrt(first+second) > r
 }
